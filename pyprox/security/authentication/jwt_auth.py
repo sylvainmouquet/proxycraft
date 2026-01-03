@@ -2,7 +2,7 @@ from typing import Dict, Optional
 from datetime import datetime, timedelta
 from jose import jwt
 from pydantic import SecretStr
-from pyprox.security.authentication.auth import Auth
+from proxycraft.security.authentication.auth import Auth
 
 
 class JWTAuth(Auth):

@@ -1,5 +1,5 @@
 [project]
-name = "pyprox"
+name = "proxycraft"
 version = "1.0.0"
 description = "⚡ High-performance Python proxy server with authentication, load balancing, caching, and multi-protocol support"
 authors = [{name = "Sylvain Mouquet", email = "sylvain.mouquet@gmail.com"}]
@@ -26,9 +26,9 @@ dependencies = [
 ]
 
 license = { text = "MIT" }
-url = "https://github.com/sylvainmouquet/pyprox"
+url = "https://github.com/sylvainmouquet/proxycraft"
 keywords = [
-    "pyprox",
+    "proxycraft",
     "proxy",
     "python",
     "http",
@@ -52,10 +52,10 @@ classifiers = [
 ]
 
 [project.urls]
-homepage = "https://github.com/sylvainmouquet/pyprox"
-documentation = "https://github.com/sylvainmouquet/pyprox"
-repository = "https://github.com/sylvainmouquet/pyprox"
-changelog = "https://github.com/sylvainmouquet/pyprox/releases"
+homepage = "https://github.com/sylvainmouquet/proxycraft"
+documentation = "https://github.com/sylvainmouquet/proxycraft"
+repository = "https://github.com/sylvainmouquet/proxycraft"
+changelog = "https://github.com/sylvainmouquet/proxycraft/releases"
 
 
 [build-system]
@@ -72,7 +72,7 @@ ruff = ">=0.6.7"
 
 
 [tool.uv.sources]
-pyprox = { path = "pyprox" }
+proxycraft = { path = "proxycraft" }
 
 [project.entry-points.pytest11]
-pyprox = "pyprox"
+proxycraft = "proxycraft"

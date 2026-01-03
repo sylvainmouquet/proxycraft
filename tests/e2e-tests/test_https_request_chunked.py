@@ -1,6 +1,6 @@
-from pyprox import PyProx
+from proxycraft import ProxyCraft
 import pytest
-from pyprox.config.models import Config
+from proxycraft.config.models import Config
 import threading
 import httpx
 import time
@@ -12,7 +12,7 @@ import socket
 async def test_https_request_chunked():
     config = {
         "version": "1.0",
-        "name": "PyProx",
+        "name": "ProxyCraft",
         "server": {"type": "uvicorn"},
         "endpoints": [
             {
@@ -38,11 +38,11 @@ async def test_https_request_chunked():
     }
 
     # Initialize the proxy
-    pyprox: PyProx = PyProx(config=Config(**config))
+    proxycraft: ProxyCraft = ProxyCraft(config=Config(**config))
 
     # Start proxy in a separate daemon thread
     proxy_thread = threading.Thread(
-        target=pyprox.serve, daemon=True, name="PyProxThread"
+        target=proxycraft.serve, daemon=True, name="ProxyCraftThread"
     )
     proxy_thread.start()
 
@@ -63,7 +63,7 @@ async def test_https_request_chunked():
 
     wait_port_available(host="0.0.0.0", port=8080)
 
-    transport = httpx.ASGITransport(app=pyprox.app)
+    transport = httpx.ASGITransport(app=proxycraft.app)
     timeout = httpx.Timeout(300.0)  # 5 minutes
 
     async with httpx.AsyncClient(

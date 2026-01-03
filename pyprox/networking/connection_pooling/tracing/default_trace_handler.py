@@ -5,7 +5,7 @@ from typing import Dict, Optional, Callable
 from dataclasses import dataclass
 
 
-from pyprox.logger import get_logger
+from proxycraft.logger import get_logger
 
 
 logger = get_logger(__name__)
@@ -18,7 +18,7 @@ class TraceHandlers:
     enable_logging: bool = True
 
     log_level: str = "INFO"
-    logger_name: str = "pyprox"
+    logger_name: str = "proxycraft"
     # Custom trace callbacks
     on_request_start: Optional[Callable] = None
     on_request_end: Optional[Callable] = None

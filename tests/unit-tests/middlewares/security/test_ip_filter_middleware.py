@@ -9,9 +9,9 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 from starlette.testclient import TestClient
 
-from pyprox import PyProx
-from pyprox.config.models import Config
-from pyprox.middlewares.security.ip_filter import IpFilterMiddleware
+from proxycraft import ProxyCraft
+from proxycraft.config.models import Config
+from proxycraft.middlewares.security.ip_filter import IpFilterMiddleware
 
 
 @pytest.fixture(params=[True, False])
@@ -43,7 +43,7 @@ def config(request):
 async def test_ip_filter_middleware(config):
     enabled = config.middlewares.security.ip_filter.enabled
     logging.info(f"Enabled = {enabled}")
-    pyprox = PyProx(config=config)
+    proxycraft = ProxyCraft(config=config)
 
     async def test_ip(request: Request):
         client_ip = request.client.host if request.client else None
@@ -54,7 +54,7 @@ async def test_ip_filter_middleware(config):
     app = Starlette(routes=routes)
 
     # Add the middleware to your app
-    app.add_middleware(IpFilterMiddleware, config=pyprox.config)  # type: ignore
+    app.add_middleware(IpFilterMiddleware, config=proxycraft.config)  # type: ignore
 
     # Create a test client
     client = TestClient(app)

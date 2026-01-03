@@ -1,6 +1,6 @@
 import pytest
 
-from pyprox.logger import get_logger
+from proxycraft.logger import get_logger
 
 logger = get_logger(__name__)
 

@@ -3,8 +3,8 @@ import logging
 
 import pytest
 
-from pyprox.networking.connection_pooling.http_client import HTTPClient
-from pyprox.networking.connection_pooling.tracing.default_trace_handler import (
+from proxycraft.networking.connection_pooling.http_client import HTTPClient
+from proxycraft.networking.connection_pooling.tracing.default_trace_handler import (
     TraceHandlers,
 )
 

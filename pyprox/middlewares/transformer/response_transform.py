@@ -5,8 +5,8 @@ from antpathmatcher import AntPathMatcher
 
 from starlette.types import Message
 
-from pyprox.logger import get_logger
-from pyprox.networking.routing.routing_selector import RoutingSelector
+from proxycraft.logger import get_logger
+from proxycraft.networking.routing.routing_selector import RoutingSelector
 
 
 logger = get_logger(__name__)
@@ -62,5 +62,5 @@ class ResponseTransformerMiddleware:
             elif message_type == "http.response.end":
                 await send(message)
 
-        # config = self.pyprox.config
+        # config = self.proxycraft.config
         await self.app(scope, receive, send_with_transformation)

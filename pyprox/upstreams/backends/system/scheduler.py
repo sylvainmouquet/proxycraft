@@ -4,8 +4,8 @@ import logging
 from starlette.requests import Request
 from starlette.responses import Response
 
-from pyprox.config.models import Endpoint, Backends
-from pyprox.networking.connection_pooling.connection_pooling import (
+from proxycraft.config.models import Endpoint, Backends
+from proxycraft.networking.connection_pooling.connection_pooling import (
     ConnectionPooling,
 )
 

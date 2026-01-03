@@ -12,7 +12,7 @@ import aiofiles
 from starlette.requests import Request
 from starlette.responses import StreamingResponse, JSONResponse, Response
 import json
-from pyprox.config.models import Endpoint, Backends
+from proxycraft.config.models import Endpoint, Backends
 
 
 class Command:

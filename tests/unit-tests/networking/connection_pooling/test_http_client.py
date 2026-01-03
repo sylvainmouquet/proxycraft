@@ -7,8 +7,8 @@ import time
 
 import pytest
 
-from pyprox.networking.connection_pooling.http_client import HTTPClient, event_loop_manager, safe_singleton
-from pyprox.networking.connection_pooling.tracing.default_trace_handler import TraceHandlers
+from proxycraft.networking.connection_pooling.http_client import HTTPClient, event_loop_manager, safe_singleton
+from proxycraft.networking.connection_pooling.tracing.default_trace_handler import TraceHandlers
 import aiohttp
 
 # Demonstration

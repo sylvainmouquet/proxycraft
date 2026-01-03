@@ -4,67 +4,67 @@ from pathlib import Path
 
 import aiohttp
 
-from pyprox import __version__
+from proxycraft import __version__
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.routing import Route, WebSocketRoute
 from starlette.websockets import WebSocket
-from pyprox.config.models import Endpoint, Config
-from pyprox.logger import get_logger
-from pyprox.middlewares.content_length_middleware import ContentLengthMiddleware
+from proxycraft.config.models import Endpoint, Config
+from proxycraft.logger import get_logger
+from proxycraft.middlewares.content_length_middleware import ContentLengthMiddleware
 import asyncio
 import gunicorn.app.base
-from pyprox.middlewares.performance.resource_filter import (
+from proxycraft.middlewares.performance.resource_filter import (
     ResourceFilterMiddleware,
 )
-from pyprox.middlewares.performance.caching.in_memory import (
+from proxycraft.middlewares.performance.caching.in_memory import (
     InMemoryCacheMiddleware,
 )
 
-from pyprox.middlewares.performance.caching.in_file import (
+from proxycraft.middlewares.performance.caching.in_file import (
     InFileCacheMiddleware,
 )
 
-from pyprox.middlewares.performance.compression import (
+from proxycraft.middlewares.performance.compression import (
     CompressionMiddleware,
 )
-from pyprox.middlewares.security.bot_filter import (
+from proxycraft.middlewares.security.bot_filter import (
     BotFilterMiddleware,
 )
-from pyprox.middlewares.security.ip_filter import (
+from proxycraft.middlewares.security.ip_filter import (
     IpFilterMiddleware,
 )
 
 from http import HTTPStatus, HTTPMethod
 
-from pyprox.middlewares.transformer.response_transform import (
+from proxycraft.middlewares.transformer.response_transform import (
     ResponseTransformerMiddleware,
 )
 
-from pyprox.config.loader import get_file_config
-from pyprox.networking.connection_pooling.connectors.connector_sage_singleton import (
+from proxycraft.config.loader import get_file_config
+from proxycraft.networking.connection_pooling.connectors.connector_sage_singleton import (
     safe_singleton,
 )
-from pyprox.networking.connection_pooling.connectors.event_loop_connector_manager import (
+from proxycraft.networking.connection_pooling.connectors.event_loop_connector_manager import (
     event_loop_manager,
 )
-from pyprox.networking.connection_pooling.tracing.default_trace_handler import (
+from proxycraft.networking.connection_pooling.tracing.default_trace_handler import (
     DefaultTraceHandlers,
     TraceHandlers,
 )
 
-from pyprox.networking.routing.routing_selector import RoutingSelector
+from proxycraft.networking.routing.routing_selector import RoutingSelector
 import httpx
 
-from pyprox.upstreams.backends.file_system.file import File
-from pyprox.upstreams.backends.system.command import Command
-from pyprox.upstreams.backends.http.echo import Echo
-from pyprox.upstreams.backends.http.https import Https
-from pyprox.upstreams.backends.http.mock import Mock
-from pyprox.upstreams.backends.http.redirect import Redirect
-from pyprox.upstreams.backends.system.scheduler import Scheduler
-from pyprox.utils.utils import check_path
+from proxycraft.upstreams.backends.file_system.file import File
+from proxycraft.upstreams.backends.system.command import Command
+from proxycraft.upstreams.backends.http.echo import Echo
+from proxycraft.upstreams.backends.http.https import Https
+from proxycraft.upstreams.backends.http.mock import Mock
+from proxycraft.upstreams.backends.http.redirect import Redirect
+from proxycraft.upstreams.backends.system.scheduler import Scheduler
+from proxycraft.utils.utils import check_path
 
 logger = get_logger(__name__)
 
@@ -221,7 +221,7 @@ async def websocket_proxy(websocket: WebSocket, channel: str):
         await websocket.close()
 
 
-class PyProx:
+class ProxyCraft:
     def __init__(self, config_file: str | None = None, config: Config | None = None):
         async def handle_all_methods(request: Request):
             return await handle_request(
@@ -252,7 +252,7 @@ class PyProx:
             # skips
 
             # backends
-            # app.add_middleware(CircuitBreakingMiddleware, pyprox=pyprox)  # type: ignore
+            # app.add_middleware(CircuitBreakingMiddleware, proxycraft=proxycraft)  # type: ignore
             self.app.add_middleware(ContentLengthMiddleware)  # type: ignore
 
             if (
@@ -391,7 +391,7 @@ class PyProx:
         )
 
         trace_handlers = TraceHandlers(
-            enable_logging=True, log_level=logging.INFO, logger_name="pyprox"
+            enable_logging=True, log_level=logging.INFO, logger_name="proxycraft"
         )
 
         handlers = DefaultTraceHandlers(trace_handlers)
@@ -484,7 +484,7 @@ class PyProx:
 
             # Granian configuration
             granian_app = Granian(
-                target=pyprox.app,  # Will be set to self.app
+                target=proxycraft.app,  # Will be set to self.app
                 address=host,
                 port=port,
                 interface=Interfaces.ASGI,
@@ -582,5 +582,5 @@ if __name__ == "__main__":
     source_dir = Path(__file__).parent
     config_path = source_dir / "default.json"
 
-    pyprox: PyProx = PyProx(config_file=config_path.as_posix())
-    pyprox.serve()
+    proxycraft: ProxyCraft = ProxyCraft(config_file=config_path.as_posix())
+    proxycraft.serve()

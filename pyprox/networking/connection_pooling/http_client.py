@@ -2,19 +2,19 @@ from pickle import FALSE
 import aiohttp
 from aiohttp import ClientTimeout, TCPConnector, TraceConfig
 
-from pyprox.networking.connection_pooling.connectors.connector_sage_singleton import (
+from proxycraft.networking.connection_pooling.connectors.connector_sage_singleton import (
     safe_singleton,
 )
-from pyprox.networking.connection_pooling.connectors.context_connector import (
+from proxycraft.networking.connection_pooling.connectors.context_connector import (
     get_context_connector,
 )
-from pyprox.networking.connection_pooling.connectors.event_loop_connector_manager import (
+from proxycraft.networking.connection_pooling.connectors.event_loop_connector_manager import (
     event_loop_manager,
 )
-from pyprox.networking.connection_pooling.connectors.thread_local_connector import (
+from proxycraft.networking.connection_pooling.connectors.thread_local_connector import (
     thread_local_connector,
 )
-from pyprox.networking.connection_pooling.tracing.default_trace_handler import (
+from proxycraft.networking.connection_pooling.tracing.default_trace_handler import (
     DefaultTraceHandlers,
     TraceHandlers,
 )

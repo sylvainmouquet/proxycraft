@@ -1,6 +1,6 @@
-from pyprox import PyProx
-from pyprox.config.models import Config
-from pyprox.utils.utils import check_path
+from proxycraft import ProxyCraft
+from proxycraft.config.models import Config
+from proxycraft.utils.utils import check_path
 import pytest
 import json
 
@@ -41,9 +41,9 @@ async def test_check_path():
 }
 """
 
-    pyprox: PyProx = PyProx(config=Config(**json.loads(config)))
-    if check_path(pyprox.config, "middlewares.security.ip_filter.enabled"):
-        enabled = pyprox.config.middlewares.security.ip_filter.enabled
+    proxycraft: ProxyCraft = ProxyCraft(config=Config(**json.loads(config)))
+    if check_path(proxycraft.config, "middlewares.security.ip_filter.enabled"):
+        enabled = proxycraft.config.middlewares.security.ip_filter.enabled
         print(f"Cache enabled: {enabled}")
 
     # Multiple checks
@@ -62,9 +62,9 @@ async def test_check_path():
     ]
 
     for path in config_paths_exists:
-        exists = check_path(pyprox.config, path)
+        exists = check_path(proxycraft.config, path)
         assert exists is True, path
 
     for path in config_paths_not_exists:
-        exists = check_path(pyprox.config, path)
+        exists = check_path(proxycraft.config, path)
         assert exists is False, path

@@ -7,9 +7,9 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 from starlette.responses import Response
 
-from pyprox.config.models import Config
+from proxycraft.config.models import Config
 
-from pyprox.logger import get_logger
+from proxycraft.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -136,7 +136,7 @@ class CircuitBreakingMiddleware:
         Returns:
             bool: True if circuit is open (requests should be blocked), False otherwise
         """
-        config = self.pyprox.config
+        config = self.proxycraft.config
 
         # Get thresholds from config or use defaults
         failure_threshold = 5

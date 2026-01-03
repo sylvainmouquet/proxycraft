@@ -26,7 +26,7 @@ WORKDIR /app
 COPY pyproject.toml uv.lock README.md ./
 
 # Copy application code
-COPY pyprox /app/pyprox
+COPY proxycraft /app/proxycraft
 
 # Install dependencies
 RUN uv sync --frozen --no-cache
@@ -35,4 +35,4 @@ RUN uv sync --frozen --no-cache
 EXPOSE 8000
 
 # Run the application using uv
-CMD ["uv", "run", "python", "-m", "pyprox.pyprox"]
+CMD ["uv", "run", "python", "-m", "proxycraft.proxycraft"]

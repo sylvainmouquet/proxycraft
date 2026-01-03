@@ -1,17 +1,17 @@
 import threading
 import socket
 import time
-from pyprox import PyProx
+from proxycraft import ProxyCraft
 import logging
 
 if __name__ == "__main__":
     # Initialize the proxy
-    pyprox: PyProx = PyProx(config_file="proxy.json")
-    pyprox.serve()
+    proxycraft: ProxyCraft = ProxyCraft(config_file="proxy.json")
+    proxycraft.serve()
     """
     # Start proxy in a separate daemon thread
     proxy_thread = threading.Thread(
-        target=pyprox.serve, daemon=True, name="PyProxThread"
+        target=proxycraft.serve, daemon=True, name="ProxyCraftThread"
     )
 
 

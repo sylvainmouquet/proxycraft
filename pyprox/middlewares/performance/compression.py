@@ -3,11 +3,11 @@ from starlette.middleware.gzip import GZipMiddleware
 from starlette.requests import Request
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from pyprox.config.models import Config
-from pyprox.networking.routing.routing_selector import RoutingSelector
+from proxycraft.config.models import Config
+from proxycraft.networking.routing.routing_selector import RoutingSelector
 
 
-from pyprox.logger import get_logger
+from proxycraft.logger import get_logger
 
 logger = get_logger(__name__)
 

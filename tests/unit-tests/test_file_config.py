@@ -1,9 +1,9 @@
 import pytest
 
-from pyprox.pyprox import PyProx
+from proxycraft.proxycraft import ProxyCraft
 
 
 @pytest.mark.asyncio
 async def test_load_config():
-    pyprox = PyProx(config_file="pyprox/default.json")
-    assert pyprox.config.name == "PyProx"
+    proxycraft = ProxyCraft(config_file="proxycraft/default.json")
+    assert proxycraft.config.name == "ProxyCraft"

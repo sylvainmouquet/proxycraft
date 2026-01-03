@@ -4,9 +4,9 @@ import asyncio
 from starlette.requests import Request
 from starlette.types import Scope, Receive, Send, ASGIApp
 
-from pyprox.config.models import Config
+from proxycraft.config.models import Config
 
-from pyprox.logger import get_logger
+from proxycraft.logger import get_logger
 
 logger = get_logger(__name__)
 

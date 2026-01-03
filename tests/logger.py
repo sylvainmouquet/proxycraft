@@ -4,7 +4,7 @@ Structured logging setup with structlog
 
 from typing import Any
 
-from pyprox.logger import setup_structlog, get_logger
+from proxycraft.logger import setup_structlog, get_logger
 
 # Example usage
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 from starlette.responses import Response, StreamingResponse
 
-from pyprox.files.reader.io_async_reader import download_text_file
+from proxycraft.files.reader.io_async_reader import download_text_file
 
 
 class TestDownloadTextFile:

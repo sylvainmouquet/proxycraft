@@ -1,10 +1,10 @@
 from pathlib import Path
 
 
-from pyprox.config.models import Backends, Endpoint
+from proxycraft.config.models import Backends, Endpoint
 from starlette.requests import Request
 
-from pyprox.files.reader.io_async_reader import download_text_file
+from proxycraft.files.reader.io_async_reader import download_text_file
 
 
 class File:

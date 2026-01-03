@@ -1,6 +1,6 @@
 from antpathmatcher import AntPathMatcher
 
-from pyprox.config.models import (
+from proxycraft.config.models import (
     Config,
     Endpoint,
 )

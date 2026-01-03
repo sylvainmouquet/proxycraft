@@ -9,16 +9,16 @@ from aiohttp import ClientTimeout, TCPConnector, TraceConfig
 from starlette.exceptions import HTTPException
 from starlette.responses import StreamingResponse, Response
 
-from pyprox.config.models import Backends, Endpoint, HTTPMethod
+from proxycraft.config.models import Backends, Endpoint, HTTPMethod
 from starlette.requests import Request
 
-from pyprox.networking.connection_pooling.tracing.default_trace_handler import (
+from proxycraft.networking.connection_pooling.tracing.default_trace_handler import (
     TraceHandlers, DefaultTraceHandlers,
 )
-from pyprox.protocols.https_aiohttp import HTTPS_aiohttp
-from pyprox.security.authentication.auth import Auth
+from proxycraft.protocols.https_aiohttp import HTTPS_aiohttp
+from proxycraft.security.authentication.auth import Auth
 
-from pyprox.logger import get_logger
+from proxycraft.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -168,7 +168,7 @@ class Https:
             logger.warning("TraceConfig unavailable")
 
             trace_handlers = TraceHandlers(
-                enable_logging=True, log_level=logging.INFO, logger_name="pyprox"
+                enable_logging=True, log_level=logging.INFO, logger_name="proxycraft"
             )
 
             handlers = DefaultTraceHandlers(trace_handlers)

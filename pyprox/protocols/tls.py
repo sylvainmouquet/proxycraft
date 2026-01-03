@@ -1,6 +1,6 @@
 import asyncio
 from typing import Any, AsyncGenerator
-from pyprox.protocols.tcp import TCP, TCPConnection
+from proxycraft.protocols.tcp import TCP, TCPConnection
 import contextlib
 
 

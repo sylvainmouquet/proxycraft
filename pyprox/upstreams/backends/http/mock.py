@@ -1,7 +1,7 @@
 from antpathmatcher import AntPathMatcher
 from starlette.responses import JSONResponse, Response
 
-from pyprox.config.models import Backends, Endpoint, MockResponseTemplate
+from proxycraft.config.models import Backends, Endpoint, MockResponseTemplate
 from starlette.requests import Request
 
 

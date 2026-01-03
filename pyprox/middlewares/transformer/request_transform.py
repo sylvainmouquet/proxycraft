@@ -2,8 +2,8 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 from antpathmatcher import AntPathMatcher
 
-from pyprox.config.models import Config
-from pyprox.logger import get_logger
+from proxycraft.config.models import Config
+from proxycraft.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -21,6 +21,6 @@ class RequestTransformerMiddleware:
             await self.app(scope, receive, send)
             return
 
-        # config = self.pyprox.config
+        # config = self.proxycraft.config
 
         await self.app(scope, receive, send)

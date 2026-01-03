@@ -3,7 +3,7 @@ import threading
 
 from aiohttp import TCPConnector
 
-from pyprox.networking.connection_pooling.connectors.event_loop_connector_manager import (
+from proxycraft.networking.connection_pooling.connectors.event_loop_connector_manager import (
     EventLoopConnectorManager,
 )
 

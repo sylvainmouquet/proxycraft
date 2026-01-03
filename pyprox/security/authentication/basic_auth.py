@@ -1,5 +1,5 @@
 from base64 import b64encode
-from pyprox.security.authentication.auth import Auth
+from proxycraft.security.authentication.auth import Auth
 from pydantic import SecretStr
 
 

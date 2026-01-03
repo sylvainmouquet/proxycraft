@@ -5,8 +5,8 @@ from starlette.responses import Response
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 
-from pyprox.config.models import Config
-from pyprox.logger import get_logger
+from proxycraft.config.models import Config
+from proxycraft.logger import get_logger
 
 logger = get_logger(__name__)
 

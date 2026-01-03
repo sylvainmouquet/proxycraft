@@ -33,10 +33,10 @@ jobs:
         working-directory: test
 
       - name: Add the dependency
-        run: uv add pyprox
+        run: uv add proxycraft
         working-directory: test
 
       - name: Add the dependency
-        run: timeout 15 uv run python -m pyprox.pyprox
+        run: timeout 15 uv run python -m proxycraft.proxycraft
         working-directory: test
 

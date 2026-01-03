@@ -3,7 +3,7 @@ import logging
 
 from threading import Lock
 
-from pyprox.config.models import Config
+from proxycraft.config.models import Config
 
 config_lock = Lock()
 

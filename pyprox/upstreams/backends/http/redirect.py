@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from starlette.responses import RedirectResponse
 
-from pyprox.config.models import Backends, Endpoint
+from proxycraft.config.models import Backends, Endpoint
 from starlette.requests import Request
 
 

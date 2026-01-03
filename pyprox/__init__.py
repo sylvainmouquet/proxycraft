@@ -1,12 +1,12 @@
 __version__ = "1.0.0"
 __all__ = (
     "__version__",
-    "PyProx",
+    "ProxyCraft",
 )
 
 import logging
 
-from pyprox.pyprox import PyProx
+from proxycraft.proxycraft import ProxyCraft
 
-logger = logging.getLogger("pyprox")
+logger = logging.getLogger("proxycraft")
 logger.addHandler(logging.NullHandler())

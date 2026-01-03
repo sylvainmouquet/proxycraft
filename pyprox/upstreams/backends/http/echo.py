@@ -6,7 +6,7 @@ from string import Template
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from pyprox.config.models import Backends, Endpoint
+from proxycraft.config.models import Backends, Endpoint
 
 
 class Echo:

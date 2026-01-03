@@ -2,7 +2,7 @@ import pytest
 from http import HTTPStatus, HTTPMethod
 from pydantic import ValidationError
 
-from pyprox.config.models import (
+from proxycraft.config.models import (
     RetryConfig,
     RateLimitRequests,
     RateLimitBurst,

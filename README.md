@@ -1,10 +1,10 @@
 
 <h1 align="center">
-PYPROX
+ProxyCraft
 </h1>
 
 
-<p align="center"><i>PyProx is the easiest and quickest way to deploy a web proxy.</i></p>
+<p align="center"><i>ProxyCraft is the easiest and quickest way to deploy a web proxy.</i></p>
 
 ****
 
@@ -46,7 +46,7 @@ PYPROX
 
 ## ✨ Features
 
-PyProx offers many features:
+ProxyCraft offers many features:
 
 - 🔒 Protocol Support: Handle HTTP, HTTPS, WebSockets, TCP/UDP, and SOCKS proxies
 - 🔐 Authentication: Support for various auth methods (Basic, Digest, NTLM, Kerberos)
@@ -68,23 +68,23 @@ PyProx offers many features:
 ## Installation
 
 ```bash
-pip install pyprox
+pip install proxycraft
 ```
 
 Or with uv:
 
 ```bash
-uv add pyprox
+uv add proxycraft
 ```
 
 ### Basic Usage
 
 ```python
-from pyprox import PyProx
+from proxycraft import ProxyCraft
 
 if __name__ == "__main__":
-    pyprox: PyProx = PyProx(config_file='proxy.json')
-    pyprox.serve(host='0.0.0.0', port=8091)
+    proxycraft: ProxyCraft = ProxyCraft(config_file='proxy.json')
+    proxycraft.serve(host='0.0.0.0', port=8091)
 ```
 
 📋 Configuration Example
@@ -120,8 +120,8 @@ if __name__ == "__main__":
 
 
 ```bash
-docker build -t pyprox -f dockerfiles/pyprox.Dockerfile .
-docker run  -p 8080:8080 pyprox
+docker build -t proxycraft -f dockerfiles/proxycraft.Dockerfile .
+docker run  -p 8080:8080 proxycraft
 ```
 
 ## 📄 License
