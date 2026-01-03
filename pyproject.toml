@@ -62,15 +62,14 @@ changelog = "https://github.com/sylvainmouquet/pyprox/releases"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.uv]
-dev-dependencies = [
-    "certifi>=2025.4.26",
-    "pip>=24.2",
-    "pytest-asyncio>=0.24.0",
-    "pytest-mock>=3.14.0",
-    "pytest>=8.3.3",
-    "ruff>=0.6.7",
-]
+[tool.poetry.dev-dependencies]
+certifi = ">=2025.4.26"
+pip = ">=24.2"
+pytest-asyncio = ">=0.24.0"
+pytest-mock = ">=3.14.0"
+pytest = ">=8.3.3"
+ruff = ">=0.6.7"
+
 
 [tool.uv.sources]
 pyprox = { path = "pyprox" }

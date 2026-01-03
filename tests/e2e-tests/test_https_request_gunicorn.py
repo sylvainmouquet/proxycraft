@@ -10,12 +10,11 @@ import socket
 
 
 @pytest.mark.asyncio
-@pytest.mark.xfail(strict=False)
 async def test_https_request():
     config = {
         "version": "1.0",
         "name": "PyProx",
-        "server": {"type": "uvicorn"},
+        "server": {"type": "gunicorn"},
         "endpoints": [
             {
                 "prefix": "/",

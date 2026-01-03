@@ -13,7 +13,7 @@ from pyprox.config.models import Backends, Endpoint, HTTPMethod
 from starlette.requests import Request
 
 from pyprox.networking.connection_pooling.tracing.default_trace_handler import (
-    TraceHandlers,
+    TraceHandlers, DefaultTraceHandlers,
 )
 from pyprox.protocols.https_aiohttp import HTTPS_aiohttp
 from pyprox.security.authentication.auth import Auth
@@ -157,11 +157,33 @@ class Https:
             )
 
         connector = getattr(request.app.state, "connector", None)
+        trace_config = getattr(request.app.state, "trace_config", None)
         if connector is None:
-            raise HTTPException(
-                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-                detail="Missing HTTP connection pool: app.state.connector is not set.",
+            logger.warning("Connector unavailable")
+            connector = aiohttp.TCPConnector(
+                limit=100, force_close=False, enable_cleanup_closed=False
             )
+
+        if trace_config is None:
+            logger.warning("TraceConfig unavailable")
+
+            trace_handlers = TraceHandlers(
+                enable_logging=True, log_level=logging.INFO, logger_name="pyprox"
+            )
+
+            handlers = DefaultTraceHandlers(trace_handlers)
+            trace_config = aiohttp.TraceConfig()
+            trace_config.on_request_start.append(handlers.on_request_start)
+            trace_config.on_request_end.append(handlers.on_request_end)
+            trace_config.on_request_exception.append(handlers.on_request_exception)
+            trace_config.on_connection_create_start.append(
+                handlers.on_connection_create_start
+            )
+            trace_config.on_connection_create_end.append(handlers.on_connection_create_end)
+            trace_config.on_connection_reuseconn.append(handlers.on_connection_reuseconn)
+            trace_config.on_dns_resolvehost_start.append(handlers.on_dns_resolvehost_start)
+            trace_config.on_dns_resolvehost_end.append(handlers.on_dns_resolvehost_end)
+
 
         body = (
             await request.body() if request.method in ["POST", "PUT", "PATCH"] else None
@@ -192,8 +214,8 @@ class Https:
             data=data,
             json_data=json_data,
             timeout=timeout,
-            connector=request.app.state.connector,
-            trace_config=request.app.state.trace_config,
+            connector=connector,
+            trace_config=trace_config,
         )
 
         if not isinstance(response, StreamingResponse):
