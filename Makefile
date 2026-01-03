@@ -18,7 +18,7 @@ wip:
 # Install command
 .PHONY: install
 install:
-	uv sync --python $${PYTHON_VERSION:-3.13} --all-extras --dev
+	uv sync --python $${PYTHON_VERSION:-3.13} --all-extras --group dev
 	
 # Build command
 .PHONY: build
