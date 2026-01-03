@@ -356,8 +356,8 @@ class Bot(BaseModel):
 
 @dataclass(slots=True)
 class BotFilterMiddleware:
-    blacklist: list[Bot]
-    whitelist: list[Bot]
+    blacklist: list[Bot] = field(default_factory=list)
+    whitelist: list[Bot] = field(default_factory=list)
     enabled: bool = True
 
 

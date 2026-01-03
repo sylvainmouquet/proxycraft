@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "name": "Py Prox",
+  "name": "PyProx",
   "timeout": "10",
   "ssl": true,
   "server": {
@@ -420,7 +420,7 @@
       "backends": {
         "command": {
           "id": "tcp-command",
-          "command": "tcpdump -i en0 src 192.168.0.153 and port 443"
+          "default": "tcpdump -i en0 src 192.168.0.153 and port 443"
         }
       },
       "upstream": {

@@ -156,6 +156,13 @@ class Https:
                 detail="Http method not supported",
             )
 
+        connector = getattr(request.app.state, "connector", None)
+        if connector is None:
+            raise HTTPException(
+                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+                detail="Missing HTTP connection pool: app.state.connector is not set.",
+            )
+
         body = (
             await request.body() if request.method in ["POST", "PUT", "PATCH"] else None
         )

@@ -1,3 +1,4 @@
+from pickle import FALSE
 import aiohttp
 from aiohttp import ClientTimeout, TCPConnector, TraceConfig
 
@@ -114,7 +115,7 @@ class HTTPClient:
             connector=self.tcp_connector,
             timeout=self.timeout,
             trace_configs=trace_configs,
-            connector_owner=True,
+            connector_owner=False,
         )
         return self
 

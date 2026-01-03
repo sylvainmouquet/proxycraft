@@ -36,6 +36,6 @@ async def test_http_client_two_clients():
         async with client.session.get("https://httpbin.org/get") as resp:
             print(f"{resp.status}")
 
-    async with HTTPClient(trace_handlers=trace_config) as client:
-        async with client.session.get("https://httpbin.org/get") as resp:
+    async with HTTPClient(trace_handlers=trace_config) as client2:
+        async with client2.session.get("https://httpbin.org/get") as resp:
             print(f"{resp.status}")

@@ -119,9 +119,9 @@ class TestTcpBackend:
 
 class TestCommandBackend:
     def test_command_backend_creation(self):
-        backend = CommandBackend(id="cmd-1", command="echo 'hello'")
+        backend = CommandBackend(id="cmd-1", default="echo 'hello'")
         assert backend.id == "cmd-1"
-        assert backend.command == "echo 'hello'"
+        assert backend.default == "echo 'hello'"
 
 
 class TestHealthCheck:
