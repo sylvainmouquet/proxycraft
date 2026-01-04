@@ -37,6 +37,6 @@ jobs:
         working-directory: test
 
       - name: Add the dependency
-        run: timeout 15 uv run python -m proxycraft.proxycraft
+        run: timeout 15 uv run python -m proxycraft.proxycraft -p 8080
         working-directory: test
 

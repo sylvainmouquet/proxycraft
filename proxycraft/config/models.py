@@ -462,6 +462,7 @@ class ServerConfig(BaseModel):
     type: Literal["uvicorn", "gunicorn", "local", "hypercorn", "granian", "robyn"] = (
         "gunicorn"
     )
+    port: int = 443
     workers: int = Field(default=2, ge=1)
 
 

@@ -4,7 +4,8 @@
   "timeout": "10",
   "ssl": true,
   "server": {
-    "type": "hypercorn"
+    "type": "hypercorn",
+    "port": 8443
   },
   "middlewares": {
     "security": {
