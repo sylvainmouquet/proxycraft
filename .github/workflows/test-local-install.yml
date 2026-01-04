@@ -29,16 +29,14 @@ jobs:
 
       - name: Init project
         run: uv init
-        working-directory: examples/simple
 
-      - name: Add the dependency
-        run: uv add ../..
-        working-directory: examples/simple
+      - name: Install dependencies
+        run: make install
 
       - name: Run
         run: |
           # Start the app in background and check if it's responding
-          timeout 15 uv run python -m main &
+          timeout 15 uv run python -m proxycraft.proxycraft &
           APP_PID=$!
           
           # Wait for startup confirmation
@@ -51,4 +49,3 @@ jobs:
               echo "Application failed to start"
               exit 1
           fi
-        working-directory: examples/simple
