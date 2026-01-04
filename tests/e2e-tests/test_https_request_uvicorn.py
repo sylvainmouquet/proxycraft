@@ -53,7 +53,7 @@ async def test_https_request():
                 s.settimeout(1)  # Add timeout to avoid blocking indefinitely
                 result = s.connect_ex((host, port))
                 s.close()
-                return result == 0  # 0 means connection successful
+                return result != 0  # 0 means connection successful
             except Exception:
                 return False
 
