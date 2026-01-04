@@ -462,6 +462,7 @@ class ServerConfig(BaseModel):
     type: Literal["uvicorn", "gunicorn", "local", "hypercorn", "granian", "robyn"] = (
         "gunicorn"
     )
+    port: int  | None = None
     workers: int = Field(default=2, ge=1)
 
 
@@ -472,5 +473,5 @@ class Config(BaseModel):
     server: ServerConfig = Field(default_factory=ServerConfig)
     endpoints: list[Endpoint]
     timeout: str | None = None
-    ssl: bool | None = None
+    ssl: bool = False
     middlewares: Middleware | None = None

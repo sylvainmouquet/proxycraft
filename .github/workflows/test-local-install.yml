@@ -27,13 +27,8 @@ jobs:
       - name: Use uv with Python version
         run: uv venv --python 3.13
 
-      - name: Init project
-        run: uv init
-        working-directory: examples/simple
-
-      - name: Add the dependency
-        run: uv add ../..
-        working-directory: examples/simple
+      - name: Install dependencies
+        run: make install
 
       - name: Run
         run: |
@@ -51,4 +46,4 @@ jobs:
               echo "Application failed to start"
               exit 1
           fi
-        working-directory: examples/simple
+        working-directory: examples/http_server

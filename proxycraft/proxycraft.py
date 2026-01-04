@@ -419,7 +419,7 @@ class ProxyCraft:
         if hasattr(self.app.state, "connector") and not self.app.state.connector.closed:
             await self.app.state.connector.close()
 
-    def serve(self, host: str = "0.0.0.0", port: int = 443):
+    def serve(self, host: str = "0.0.0.0", port: int | None = None):
         async def health_check(request):
             return JSONResponse({"status": "healthy"})
 
@@ -470,9 +470,18 @@ class ProxyCraft:
         server = DEFAULT_SERVER
         nb_workers = DEFAULT_NB_WORKERS
 
+        ssl = getattr(self.config, "ssl", False)
+        if port is None:
+            port = 8443 if ssl else 8080
+            
         if check_path(self.config, "server.type"):
             server = self.config.server.type
 
+        if check_path(self.config, "server.port") and self.config.server.port:
+            port = self.config.server.port
+
+        logger.debug(f"Host: {host}, Port: {port}")
+            
         if server == "local":
             return
 
@@ -490,9 +499,8 @@ class ProxyCraft:
                 interface=Interfaces.ASGI,
                 workers=nb_workers,
                 loop=Loops.uvloop,
-                # SSL configuration
-                ssl_cert=Path("fullchain.pem"),
-                ssl_key=Path("privkey.pem"),
+                # SSL configuration (only if ssl is True)
+                **({"ssl_cert": Path("fullchain.pem"), "ssl_key": Path("privkey.pem")} if ssl else {})
                 # Performance settings
             )
 
@@ -541,10 +549,16 @@ class ProxyCraft:
                 "bind": f"{host}:{port}",
                 "workers": nb_workers,
                 "worker_class": "uvicorn.workers.UvicornWorker",
-                "keyfile": Path(Path(__file__).parent.parent / "privkey.pem").as_posix(),
-                "certfile": Path(Path(__file__).parent.parent / "fullchain.pem").as_posix(),
-                "ssl_version": 3,  # TLS 1.2+
-                "ciphers": "TLSv1.2:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!SRP:!CAMELLIA",
+                **(
+                    {
+                        "keyfile": Path(Path(__file__).parent.parent / "privkey.pem").as_posix(),
+                        "certfile": Path(Path(__file__).parent.parent / "fullchain.pem").as_posix(),
+                        "ssl_version": 3,  # TLS 1.2+
+                        "ciphers": "TLSv1.2:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!SRP:!CAMELLIA",
+                    }
+                    if ssl
+                    else {}
+                ),
             }
             StandaloneApplication(self.app, options).run()
         elif server == "uvicorn":
@@ -556,10 +570,16 @@ class ProxyCraft:
                 self.app,
                 host=host,
                 port=port,
-                ssl_keyfile=Path(Path(__file__).parent.parent / "privkey.pem").as_posix(),
-                ssl_certfile=Path(Path(__file__).parent.parent / "fullchain.pem").as_posix(),
-                ssl_version=3,  # TLS 1.2+
-                ssl_ciphers="TLSv1.2:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!SRP:!CAMELLIA",
+                **(
+                    {
+                        "ssl_keyfile": Path(Path(__file__).parent.parent / "privkey.pem").as_posix(),
+                        "ssl_certfile": Path(Path(__file__).parent.parent / "fullchain.pem").as_posix(),
+                        "ssl_version": 3,  # TLS 1.2+
+                        "ssl_ciphers": "TLSv1.2:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!SRP:!CAMELLIA",
+                    }
+                    if ssl
+                    else {}
+                ),
             )
         else:
             logger.info("Start hypercorn server")
@@ -569,8 +589,9 @@ class ProxyCraft:
 
             config = HypercornConfig()
             config.bind = [f"{host}:{port}"]
-            config.certfile =Path(Path(__file__).parent.parent / "fullchain.pem").as_posix()
-            config.keyfile = Path(Path(__file__).parent.parent / "privkey.pem").as_posix()
+            if ssl:
+                config.certfile = Path(Path(__file__).parent.parent / "fullchain.pem").as_posix()
+                config.keyfile = Path(Path(__file__).parent.parent / "privkey.pem").as_posix()
             config.alpn_protocols = ["h2", "http/1.1"]  # Default priority
             config.h2_max_concurrent_streams = 100  # Default is 100
             config.h2_max_frame_size = 16384  # Default is 16KB
