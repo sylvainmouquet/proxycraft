@@ -33,7 +33,7 @@ jobs:
       - name: Run
         run: |
           # Start the app in background and check if it's responding
-          timeout 15 uv run python -m proxycraft.proxycraft &
+          timeout 15 uv run python -m main &
           APP_PID=$!
           
           # Wait for startup confirmation
@@ -46,3 +46,4 @@ jobs:
               echo "Application failed to start"
               exit 1
           fi
+        working-directory: examples/http_server

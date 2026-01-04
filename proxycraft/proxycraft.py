@@ -419,7 +419,7 @@ class ProxyCraft:
         if hasattr(self.app.state, "connector") and not self.app.state.connector.closed:
             await self.app.state.connector.close()
 
-    def serve(self, host: str = "0.0.0.0"):
+    def serve(self, host: str = "0.0.0.0", port: int = 443):
         async def health_check(request):
             return JSONResponse({"status": "healthy"})
 
@@ -475,8 +475,6 @@ class ProxyCraft:
 
         if check_path(self.config, "server.port"):
             port = self.config.server.port
-        else:
-            port = 443
 
         logger.debug(f"Host: {host}, Port: {port}")
             
