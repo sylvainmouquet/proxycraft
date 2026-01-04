@@ -1,3 +1,4 @@
+from gzip import FNAME
 import pytest
 from http import HTTPStatus, HTTPMethod
 from pydantic import ValidationError
@@ -419,7 +420,7 @@ class TestConfig:
         assert config.version == "1.0.0"
         assert config.endpoints == [endpoint]
         assert config.timeout is None
-        assert config.ssl is None
+        assert config.ssl is False
         assert config.middlewares is None
 
     def test_config_with_all_params(self):
