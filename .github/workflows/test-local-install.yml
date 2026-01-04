@@ -27,9 +27,6 @@ jobs:
       - name: Use uv with Python version
         run: uv venv --python 3.13
 
-      - name: Init project
-        run: uv init
-
       - name: Install dependencies
         run: make install
 

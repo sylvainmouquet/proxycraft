@@ -126,4 +126,4 @@ docker run  -p 8080:8080 proxycraft
 
 ## 📄 License
 
-[Business Source License 1.1](LICENSE)
+[MIT](LICENSE)

@@ -477,6 +477,8 @@ class ProxyCraft:
             port = self.config.server.port
         else:
             port = 443
+
+        logger.debug(f"Host: {host}, Port: {port}")
             
         if server == "local":
             return
