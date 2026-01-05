@@ -12,7 +12,7 @@
       "backends": {
         "command": {
           "id": "docker",
-          "darwin": "container",
+          "darwin": "docker",
           "default": "docker"
         }
       },

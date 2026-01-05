@@ -4,14 +4,14 @@ import platform
 import pty
 import struct
 import os
-
+import json
 import fcntl
 import termios
 from http import HTTPStatus
-import aiofiles
+
 from starlette.requests import Request
 from starlette.responses import StreamingResponse, JSONResponse, Response
-import json
+
 from proxycraft.config.models import Endpoint, Backends
 
 
@@ -26,98 +26,110 @@ class Command:
         self.timeout = 10
 
     async def handle_request(self, request: Request, headers: dict) -> Response:
-        """Execute a command and return its output.
-
-        Args:
-            command: The command to execute
-
-        Returns:
-            Response object containing command output and status
-        """
         try:
-            current_platform = platform.system().lower().replace(' ', '_')
+            # -------------------------
+            # Resolve command
+            # -------------------------
+            current_platform = platform.system().lower().replace(" ", "_")
+
             if hasattr(self.backend.command, current_platform):
-                command = [getattr(self.backend.command, 'darwin', self.backend.command)]
+                base_cmd = getattr(self.backend.command, current_platform)
             else:
-                command = [self.backend.command.default]
-            body =(await request.body()).decode()
+                base_cmd = self.backend.command.default
 
-            if body and '' != body:
+            if isinstance(base_cmd, str):
+                command = [base_cmd]
+            else:
+                command = list(base_cmd)
+
+            body = (await request.body()).decode()
+            if body:
                 json_body = json.loads(body)
-                if 'args' in json_body:
-                    args = json_body['args']
-                    command.extend(args)
+                if isinstance(json_body, dict) and "args" in json_body:
+                    command.extend(map(str, json_body["args"]))
 
-            command = ' '.join(command)
-            logging.info(f"Executing command: {command}")
+            logging.info("Executing command: %s", " ".join(command))
+
             env = os.environ.copy()
-            env.update({"PYTHONUNBUFFERED": "1", "TERM": "xterm-256color"})
+            env.update({
+                "PYTHONUNBUFFERED": "1",
+                "TERM": "xterm-256color",
+            })
 
-            # Handle streaming response
+            # -------------------------
+            # Streaming generator
+            # -------------------------
             async def stream_output():
                 master, slave = pty.openpty()
 
-                # Set terminal size to ensure proper behavior
+                # Terminal size
                 term_size = struct.pack("HHHH", 24, 80, 0, 0)
                 fcntl.ioctl(slave, termios.TIOCSWINSZ, term_size)
 
-                # Start process with the slave end of pty as stdout/stderr
-                p1 = await asyncio.create_subprocess_shell(
-                    command,
+                process = await asyncio.create_subprocess_exec(
+                    *command,
+                    stdin=asyncio.subprocess.PIPE,
                     stdout=slave,
                     stderr=slave,
-                    stdin=asyncio.subprocess.PIPE,
-                    close_fds=False,
                     env=env,
                 )
 
-                # Close the slave end in this process
                 os.close(slave)
 
-                # Set non-blocking mode on the master end
-                fl = fcntl.fcntl(master, fcntl.F_GETFL)
-                fcntl.fcntl(master, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+                # Non-blocking master
+                flags = fcntl.fcntl(master, fcntl.F_GETFL)
+                fcntl.fcntl(master, fcntl.F_SETFL, flags | os.O_NONBLOCK)
 
-                # Read from the master end in a loop
-                async with aiofiles.open(master, "rb") as file:
+                try:
                     while True:
                         try:
-                            # data = await aiofiles.open(master)
-                            # data = os.read(master, self.buffer_size)
-                            # if data:
-                            data = await file.read(self.buffer_size)
+                            data = os.read(master, self.buffer_size)
                             if data:
                                 yield data
-                            else:
-                                await asyncio.sleep(0.1)
+                                continue
                         except BlockingIOError:
-                            await asyncio.sleep(0.1)
+                            pass
                         except OSError:
                             break
 
-                        # Check if process is still running
-                        if p1.returncode is not None:
+                        if process.returncode is not None:
                             break
 
-                """
-                try:
-                    os.close(master)
-                except OSError:
-                    pass
-                """
+                        await asyncio.sleep(0.05)
 
-                await p1.wait()
+                    # Drain remaining output
+                    while True:
+                        try:
+                            data = os.read(master, self.buffer_size)
+                            if not data:
+                                break
+                            yield data
+                        except OSError:
+                            break
 
-            return StreamingResponse(stream_output())
+                finally:
+                    try:
+                        os.close(master)
+                    except OSError:
+                        pass
+
+                rc = await process.wait()
+                yield f"\n[exit {rc}]\n".encode()
+
+            return StreamingResponse(
+                stream_output(),
+                media_type="application/octet-stream",
+            )
 
         except asyncio.TimeoutError:
-            logging.error(f"Command execution timed out after {self.timeout}s")
+            logging.error("Command execution timed out after %ss", self.timeout)
             return JSONResponse(
                 content={"error": f"Command execution timed out after {self.timeout}s"},
                 status_code=HTTPStatus.REQUEST_TIMEOUT.value,
             )
+
         except Exception as e:
-            logging.error(f"Unexpected error executing command: {str(e)}")
+            logging.exception("Unexpected error executing command")
             return JSONResponse(
                 content={"error": str(e)},
                 status_code=HTTPStatus.INTERNAL_SERVER_ERROR.value,

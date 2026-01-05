@@ -106,7 +106,7 @@ async def handle_request(
     headers.pop("accept-encoding", None)
     headers.pop("user-agent", None)
 
-    headers["user-agent"] = f"python-idum-proxy/{__version__}"
+    headers["user-agent"] = f"python-proxycraft/{__version__}"
 
     # headers["content-type"] = "application/json"
     try:
