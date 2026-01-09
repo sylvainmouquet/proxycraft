@@ -51,10 +51,12 @@ class Command:
             logging.info("Executing command: %s", " ".join(command))
 
             env = os.environ.copy()
-            env.update({
-                "PYTHONUNBUFFERED": "1",
-                "TERM": "xterm-256color",
-            })
+            env.update(
+                {
+                    "PYTHONUNBUFFERED": "1",
+                    "TERM": "xterm-256color",
+                }
+            )
 
             # -------------------------
             # Streaming generator

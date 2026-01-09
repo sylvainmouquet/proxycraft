@@ -1,4 +1,3 @@
-from gzip import FNAME
 import pytest
 from http import HTTPStatus, HTTPMethod
 from pydantic import ValidationError

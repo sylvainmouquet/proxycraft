@@ -22,6 +22,7 @@ dependencies = [
     "starlette>=0.50",
     "structlog>=25.3.0",
     "uvicorn>=0.40",
+    "uvicorn-worker>=0.4.0",
     "uvloop>=0.21.0",
 ]
 
@@ -62,8 +63,8 @@ changelog = "https://github.com/sylvainmouquet/proxycraft/releases"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
   "certifi>=2025.4.26",
   "pip>=24.2",
   "pytest-asyncio>=0.24.0",

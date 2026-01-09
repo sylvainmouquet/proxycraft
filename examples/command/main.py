@@ -1,8 +1,4 @@
-import threading
-import socket
-import time
 from proxycraft import ProxyCraft
-import logging
 
 if __name__ == "__main__":
     # Initialize the proxy
