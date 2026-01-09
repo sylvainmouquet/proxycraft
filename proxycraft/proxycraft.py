@@ -473,7 +473,7 @@ class ProxyCraft:
         ssl = getattr(self.config, "ssl", False)
         if port is None:
             port = 8443 if ssl else 8080
-            
+
         if check_path(self.config, "server.type"):
             server = self.config.server.type
 
@@ -481,7 +481,7 @@ class ProxyCraft:
             port = self.config.server.port
 
         logger.debug(f"Host: {host}, Port: {port}")
-            
+
         if server == "local":
             return
 
@@ -500,7 +500,11 @@ class ProxyCraft:
                 workers=nb_workers,
                 loop=Loops.uvloop,
                 # SSL configuration (only if ssl is True)
-                **({"ssl_cert": Path("fullchain.pem"), "ssl_key": Path("privkey.pem")} if ssl else {})
+                **(
+                    {"ssl_cert": Path("fullchain.pem"), "ssl_key": Path("privkey.pem")}
+                    if ssl
+                    else {}
+                ),
                 # Performance settings
             )
 
@@ -548,11 +552,15 @@ class ProxyCraft:
             options = {
                 "bind": f"{host}:{port}",
                 "workers": nb_workers,
-                "worker_class": "uvicorn.workers.UvicornWorker",
+                "worker_class": "uvicorn_worker.UvicornWorker",
                 **(
                     {
-                        "keyfile": Path(Path(__file__).parent.parent / "privkey.pem").as_posix(),
-                        "certfile": Path(Path(__file__).parent.parent / "fullchain.pem").as_posix(),
+                        "keyfile": Path(
+                            Path(__file__).parent.parent / "privkey.pem"
+                        ).as_posix(),
+                        "certfile": Path(
+                            Path(__file__).parent.parent / "fullchain.pem"
+                        ).as_posix(),
                         "ssl_version": 3,  # TLS 1.2+
                         "ciphers": "TLSv1.2:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!SRP:!CAMELLIA",
                     }
@@ -572,8 +580,12 @@ class ProxyCraft:
                 port=port,
                 **(
                     {
-                        "ssl_keyfile": Path(Path(__file__).parent.parent / "privkey.pem").as_posix(),
-                        "ssl_certfile": Path(Path(__file__).parent.parent / "fullchain.pem").as_posix(),
+                        "ssl_keyfile": Path(
+                            Path(__file__).parent.parent / "privkey.pem"
+                        ).as_posix(),
+                        "ssl_certfile": Path(
+                            Path(__file__).parent.parent / "fullchain.pem"
+                        ).as_posix(),
                         "ssl_version": 3,  # TLS 1.2+
                         "ssl_ciphers": "TLSv1.2:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!SRP:!CAMELLIA",
                     }
@@ -590,8 +602,12 @@ class ProxyCraft:
             config = HypercornConfig()
             config.bind = [f"{host}:{port}"]
             if ssl:
-                config.certfile = Path(Path(__file__).parent.parent / "fullchain.pem").as_posix()
-                config.keyfile = Path(Path(__file__).parent.parent / "privkey.pem").as_posix()
+                config.certfile = Path(
+                    Path(__file__).parent.parent / "fullchain.pem"
+                ).as_posix()
+                config.keyfile = Path(
+                    Path(__file__).parent.parent / "privkey.pem"
+                ).as_posix()
             config.alpn_protocols = ["h2", "http/1.1"]  # Default priority
             config.h2_max_concurrent_streams = 100  # Default is 100
             config.h2_max_frame_size = 16384  # Default is 16KB

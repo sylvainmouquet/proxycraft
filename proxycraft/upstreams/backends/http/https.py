@@ -13,7 +13,8 @@ from proxycraft.config.models import Backends, Endpoint, HTTPMethod
 from starlette.requests import Request
 
 from proxycraft.networking.connection_pooling.tracing.default_trace_handler import (
-    TraceHandlers, DefaultTraceHandlers,
+    TraceHandlers,
+    DefaultTraceHandlers,
 )
 from proxycraft.protocols.https_aiohttp import HTTPS_aiohttp
 from proxycraft.security.authentication.auth import Auth
@@ -179,11 +180,16 @@ class Https:
             trace_config.on_connection_create_start.append(
                 handlers.on_connection_create_start
             )
-            trace_config.on_connection_create_end.append(handlers.on_connection_create_end)
-            trace_config.on_connection_reuseconn.append(handlers.on_connection_reuseconn)
-            trace_config.on_dns_resolvehost_start.append(handlers.on_dns_resolvehost_start)
+            trace_config.on_connection_create_end.append(
+                handlers.on_connection_create_end
+            )
+            trace_config.on_connection_reuseconn.append(
+                handlers.on_connection_reuseconn
+            )
+            trace_config.on_dns_resolvehost_start.append(
+                handlers.on_dns_resolvehost_start
+            )
             trace_config.on_dns_resolvehost_end.append(handlers.on_dns_resolvehost_end)
-
 
         body = (
             await request.body() if request.method in ["POST", "PUT", "PATCH"] else None

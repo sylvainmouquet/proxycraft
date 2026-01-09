@@ -1,4 +1,3 @@
-from pickle import FALSE
 import aiohttp
 from aiohttp import ClientTimeout, TCPConnector, TraceConfig
 
