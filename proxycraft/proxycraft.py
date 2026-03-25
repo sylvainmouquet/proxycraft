@@ -222,6 +222,15 @@ async def websocket_proxy(websocket: WebSocket, channel: str):
 
 
 class ProxyCraft:
+    def make_lifespan(self):
+        @contextlib.asynccontextmanager
+        async def lifespan(app):
+            await self.startup_event()
+            yield
+            await self.shutdown_event()
+
+        return lifespan
+
     def __init__(self, config_file: str | None = None, config: Config | None = None):
         async def handle_all_methods(request: Request):
             return await handle_request(
@@ -329,13 +338,10 @@ class ProxyCraft:
             )
         self.routing_selector = RoutingSelector(self.config)
 
-        self.app = Starlette(
-            debug=True,
-            routes=routes,
-        )
+        self.app = Starlette(debug=True, routes=routes, lifespan=self.make_lifespan())
         configure_middlewares()
-        self.app.add_event_handler("startup", self.startup_event)
-        self.app.add_event_handler("shutdown", self.shutdown_event)
+        # self.app.add_event_handler("startup", self.startup_event)
+        # self.app.add_event_handler("shutdown", self.shutdown_event)
 
         self.proxy_baseurl = "http://127.0.0.1:8091"
 
