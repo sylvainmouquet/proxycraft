@@ -64,4 +64,4 @@ Migration to `features/` + `shared/` + `app/` is complete. Legacy layer folders 
 ## Related documents
 
 - [ADR 0001: Feature-based architecture](decisions/0001-feature-based-architecture.md)
-- [SPECS.md](../SPECS.md) — Product specification and feature status
+- [Product specification](../SPECS.md) — Feature status and roadmap (contributors)

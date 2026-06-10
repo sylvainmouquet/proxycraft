@@ -135,6 +135,16 @@ proxycraft/
 
 See [docs/architecture.md](docs/architecture.md) and [SPECS.md](SPECS.md) for details.
 
+## Documentation
+
+User guides (features, use cases, configuration) are on [GitHub Pages](https://sylvainmouquet.github.io/proxycraft/).
+
+Preview locally:
+
+```bash
+just docs-serve
+```
+
 ## Development
 
 Install [just](https://github.com/casey/just) and [uv](https://docs.astral.sh/uv/), then:

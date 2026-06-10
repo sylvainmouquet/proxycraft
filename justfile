@@ -52,3 +52,9 @@ update:
 
 check-deps:
     .venv/bin/pip list --outdated
+
+docs-build:
+    uv run mkdocs build --strict
+
+docs-serve:
+    uv run mkdocs serve

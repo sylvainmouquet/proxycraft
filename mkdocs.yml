@@ -1,0 +1,75 @@
+exclude_docs: |
+  architecture.md
+  decisions/*
+
+site_name: ProxyCraft
+site_description: Deploy a fast, config-driven HTTP/HTTPS reverse proxy in minutes
+site_url: https://sylvainmouquet.github.io/proxycraft/
+repo_url: https://github.com/sylvainmouquet/proxycraft
+repo_name: sylvainmouquet/proxycraft
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - content.code.copy
+    - navigation.sections
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+
+plugins:
+  - search
+  - include-markdown
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Configuration: configuration.md
+  - Features:
+    - Reverse proxy: features/reverse-proxy.md
+    - Path routing: features/routing.md
+    - Backends: features/backends.md
+    - Caching: features/caching.md
+    - Security filtering: features/security.md
+    - Response transformation: features/response-transformation.md
+    - Virtual upstream: features/virtual-upstream.md
+  - Use cases:
+    - Package registry mirror: use-cases/registry-mirror.md
+    - API gateway: use-cases/api-gateway.md
+    - Mock API for development: use-cases/mock-api.md
+    - Local and remote aggregation: use-cases/virtual-repository.md
+  - Deployment: deployment.md
+  - Changelog: changelog.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/sylvainmouquet/proxycraft

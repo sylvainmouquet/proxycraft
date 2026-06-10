@@ -57,7 +57,7 @@ classifiers = [
 
 [project.urls]
 homepage = "https://github.com/sylvainmouquet/proxycraft"
-documentation = "https://github.com/sylvainmouquet/proxycraft"
+documentation = "https://sylvainmouquet.github.io/proxycraft/"
 repository = "https://github.com/sylvainmouquet/proxycraft"
 changelog = "https://github.com/sylvainmouquet/proxycraft/releases"
 
@@ -69,6 +69,9 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
   "certifi>=2025.4.26",
+  "mkdocs-include-markdown-plugin>=7.0.0",
+  "mkdocs-material>=9.6.0",
+  "mkdocs>=1.6.0",
   "pip>=24.2",
   "pytest-asyncio>=0.24.0",
   "pytest-mock>=3.14.0",

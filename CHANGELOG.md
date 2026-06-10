@@ -6,6 +6,8 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
+- MkDocs user documentation (features, use cases, configuration, deployment)
+- `just docs-build` and `just docs-serve` recipes; GitHub Actions workflow to build and publish docs
 - `proxycraft/shared/utilities/http_compat.py` shim for `HTTPMethod` on Python 3.10
 - `proxycraft/shared/utilities/path_compat.py` helper for `Path.is_file(follow_symlinks=...)` on Python 3.10 and 3.11
 - Feature-based package layout under `proxycraft/features/`, `proxycraft/shared/`, and `proxycraft/app/`
