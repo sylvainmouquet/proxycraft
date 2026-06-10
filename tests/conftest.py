@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 
+from aiohttp import web
 import pytest
 import pytest_asyncio
 import logging
@@ -50,3 +51,22 @@ def proxycraft_app_lifespan():
             yield app
 
     return _run
+
+
+@pytest_asyncio.fixture
+async def posts_upstream_url(unused_tcp_port):
+    async def get_post(request):
+        return web.json_response({"id": int(request.match_info["post_id"])})
+
+    app = web.Application()
+    app.router.add_get("/posts/{post_id}", get_post)
+
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "127.0.0.1", unused_tcp_port)
+    await site.start()
+
+    try:
+        yield f"http://127.0.0.1:{unused_tcp_port}/posts"
+    finally:
+        await runner.cleanup()

@@ -21,7 +21,7 @@ async def demonstrate_safe_patterns():
 
     async def test_strategy(strategy: str):
         async with HTTPClient(connector_strategy=strategy) as client:
-            async with client.session.get('https://httpbin.org/get') as resp:
+            async with client.session.get('https://jsonplaceholder.typicode.com/posts/1') as resp:
                 print(f"  {strategy}: {resp.status}")
 
     # All these run safely in the same event loop
@@ -44,7 +44,7 @@ async def demonstrate_tracing():
             connector_strategy="dedicated",
             trace_handlers=trace_config
     ) as client:
-        async with client.session.get('https://httpbin.org/get') as resp:
+        async with client.session.get('https://jsonplaceholder.typicode.com/posts/1') as resp:
             print(f"  Basic tracing: {resp.status}")
 
 
@@ -77,7 +77,7 @@ async def demonstrate_dns_tracing():
     ) as client:
         # Hit different hosts to trigger DNS lookups
         hosts = [
-            'https://httpbin.org/get',
+            'https://jsonplaceholder.typicode.com/posts/1',
             'https://google.com',
             'https://github.com',
         ]
@@ -134,9 +134,9 @@ async def demonstrate_custom_trace_handlers():
     ) as client:
         # Make multiple requests to see connection reuse
         urls = [
-            'https://httpbin.org/get',
-            'https://httpbin.org/ip',
-            'https://httpbin.org/uuid'
+            'https://jsonplaceholder.typicode.com/posts/1',
+            'https://jsonplaceholder.typicode.com/users/1',
+            'https://jsonplaceholder.typicode.com/albums/1'
         ]
 
         for url in urls:
@@ -195,9 +195,9 @@ async def demonstrate_comprehensive_tracing():
             trace_handlers=trace_config
     ) as client:
         # Make requests to see all events
-        async with client.session.get('https://httpbin.org/get') as resp:
+        async with client.session.get('https://jsonplaceholder.typicode.com/posts/1') as resp:
             pass
-        async with client.session.get('https://httpbin.org/ip') as resp:  # Should reuse connection
+        async with client.session.get('https://jsonplaceholder.typicode.com/users/1') as resp:  # Should reuse connection
             pass
 
     print(f"  📊 Total trace events captured: {len(events)}")
@@ -224,7 +224,7 @@ def demonstrate_multi_thread_safety():
                 connector_strategy=strategy,
                 trace_handlers=trace_config
         ) as client:
-            async with client.session.get('https://httpbin.org/get') as resp:
+            async with client.session.get('https://jsonplaceholder.typicode.com/posts/1') as resp:
                 print(f"  Thread {worker_id} ({strategy}): {resp.status}")
 
     def run_worker(worker_id: int, strategy: str):

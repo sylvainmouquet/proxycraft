@@ -23,10 +23,10 @@ trace_config = TraceHandlers(
 @pytest.mark.asyncio
 async def test_http_client_one_client():
     async with HTTPClient(trace_handlers=trace_config) as client:
-        async with client.session.get("https://httpbin.org/get") as resp:
+        async with client.session.get("https://jsonplaceholder.typicode.com/posts/1") as resp:
             print(f"{resp.status}")
 
-        async with client.session.get("https://httpbin.org/get") as resp:
+        async with client.session.get("https://jsonplaceholder.typicode.com/posts/1") as resp:
             print(f"{resp.status}")
 
 
@@ -43,9 +43,9 @@ async def test_http_client_closes_dedicated_connector():
 @pytest.mark.asyncio
 async def test_http_client_two_clients():
     async with HTTPClient(trace_handlers=trace_config) as client:
-        async with client.session.get("https://httpbin.org/get") as resp:
+        async with client.session.get("https://jsonplaceholder.typicode.com/posts/1") as resp:
             print(f"{resp.status}")
 
     async with HTTPClient(trace_handlers=trace_config) as client2:
-        async with client2.session.get("https://httpbin.org/get") as resp:
+        async with client2.session.get("https://jsonplaceholder.typicode.com/posts/1") as resp:
             print(f"{resp.status}")

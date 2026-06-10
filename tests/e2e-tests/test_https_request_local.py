@@ -6,7 +6,7 @@ from http import HTTPStatus
 
 
 @pytest.mark.asyncio
-async def test_https_request(proxycraft_app_lifespan):
+async def test_https_request(proxycraft_app_lifespan, posts_upstream_url):
     config = {
         "version": "1.0",
         "name": "ProxyCraft",
@@ -19,8 +19,8 @@ async def test_https_request(proxycraft_app_lifespan):
                     {
                         "https": {
                             "id": "primary",
-                            "url": "https://jsonplaceholder.typicode.com/posts",
-                            "ssl": True,
+                            "url": posts_upstream_url,
+                            "ssl": False,
                         }
                     }
                 ],

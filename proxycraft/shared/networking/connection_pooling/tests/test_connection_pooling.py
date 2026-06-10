@@ -51,7 +51,8 @@ async def test_connection_pooling():
         # First request - creates a new connection
         print(f"[{time.time()}] Making first request")
         async with session.get(
-            "https://httpbin.org/get", headers={"Content-Encoding": "gzip"}
+            "https://jsonplaceholder.typicode.com/posts/1",
+            headers={"Accept-Encoding": "gzip"},
         ) as resp:
             print(f"[{time.time()}] First response received")
             await resp.text()
@@ -62,7 +63,7 @@ async def test_connection_pooling():
 
         # Second request - should reuse the existing connection
         print(f"[{time.time()}] Making second request")
-        async with session.get("https://httpbin.org/get") as resp:
+        async with session.get("https://jsonplaceholder.typicode.com/posts/1") as resp:
             print(f"[{time.time()}] Second response received")
             await resp.text()
 
@@ -72,7 +73,7 @@ async def test_connection_pooling():
 
         # Third request - should create a new connection since the old one timed out
         print(f"[{time.time()}] Making third request")
-        async with session.get("https://httpbin.org/get") as resp:
+        async with session.get("https://jsonplaceholder.typicode.com/posts/1") as resp:
             print(f"[{time.time()}] Third response received")
             await resp.text()
         await asyncio.sleep(0.01)

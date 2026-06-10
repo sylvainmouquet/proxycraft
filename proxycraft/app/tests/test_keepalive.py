@@ -68,7 +68,7 @@ async def test_keepalive():
     async with aiohttp.ClientSession(connector=connector) as session:
         # First request
         logging.info(f"\n[{time.time()}] Making first request")
-        async with session.get("https://httpbin.org/get") as resp:
+        async with session.get("https://jsonplaceholder.typicode.com/posts/1") as resp:
             logging.info(f"[{time.time()}] Response status: {resp.status}")
             await resp.text()
 
@@ -91,7 +91,7 @@ async def test_keepalive():
 
         # Second request - should reuse connection if keepalive works
         logging.info(f"\n[{time.time()}] Making second request")
-        async with session.get("https://httpbin.org/get") as resp:
+        async with session.get("https://jsonplaceholder.typicode.com/posts/1") as resp:
             logging.info(f"[{time.time()}] Response status: {resp.status}")
             await resp.text()
 
