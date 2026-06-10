@@ -1,6 +1,8 @@
 import re
 from dataclasses import dataclass, field
-from http import HTTPStatus, HTTPMethod
+from http import HTTPStatus
+
+from proxycraft.shared.utilities.http_compat import HTTPMethod
 from typing import Any, Literal
 from pydantic import BaseModel, Field, field_validator
 

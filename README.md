@@ -10,7 +10,7 @@ ProxyCraft
 
 <!-- Project Status Badges -->
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.13%2B-blue.svg)
+![Python](https://img.shields.io/badge/python-3.10--3.14-blue.svg)
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Version](https://img.shields.io/badge/version-1.0.0-green.svg)
 

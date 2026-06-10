@@ -9,7 +9,8 @@ from aiohttp import ClientTimeout, TCPConnector, TraceConfig
 from starlette.exceptions import HTTPException
 from starlette.responses import StreamingResponse, Response
 
-from proxycraft.features.configuration.models import Backends, Endpoint, HTTPMethod
+from proxycraft.features.configuration.models import Backends, Endpoint
+from proxycraft.shared.utilities.http_compat import HTTPMethod
 from starlette.requests import Request
 
 from proxycraft.shared.networking.connection_pooling.tracing.default_trace_handler import (

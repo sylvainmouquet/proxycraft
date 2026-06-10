@@ -1,6 +1,6 @@
 import contextlib
 import logging
-from http import HTTPMethod
+from proxycraft.shared.utilities.http_compat import HTTPMethod
 from pathlib import Path
 
 import aiohttp

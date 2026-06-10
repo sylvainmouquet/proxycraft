@@ -3,9 +3,11 @@ from pathlib import Path
 
 from starlette.responses import Response, StreamingResponse
 
+from proxycraft.shared.utilities.path_compat import is_regular_file
+
 
 async def download_text_file(path: Path):
-    if not path.exists() or not path.is_file(follow_symlinks=False):
+    if not path.exists() or not is_regular_file(path):
         return Response(status_code=404, media_type="text/plain", content="Not Found")
 
     def text_file_streamer():

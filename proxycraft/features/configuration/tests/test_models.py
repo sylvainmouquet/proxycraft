@@ -1,5 +1,7 @@
 import pytest
-from http import HTTPStatus, HTTPMethod
+from http import HTTPStatus
+
+from proxycraft.shared.utilities.http_compat import HTTPMethod
 from pydantic import ValidationError
 
 from proxycraft.features.configuration.models import (
