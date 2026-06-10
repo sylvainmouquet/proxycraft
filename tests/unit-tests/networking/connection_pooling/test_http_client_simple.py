@@ -31,6 +31,16 @@ async def test_http_client_one_client():
 
 
 @pytest.mark.asyncio
+async def test_http_client_closes_dedicated_connector():
+    async with HTTPClient(connector_strategy="dedicated") as client:
+        connector = client.tcp_connector
+        assert connector is not None
+        assert not connector.closed
+
+    assert connector.closed
+
+
+@pytest.mark.asyncio
 async def test_http_client_two_clients():
     async with HTTPClient(trace_handlers=trace_config) as client:
         async with client.session.get("https://httpbin.org/get") as resp:

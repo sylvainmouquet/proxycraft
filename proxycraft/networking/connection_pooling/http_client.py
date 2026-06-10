@@ -5,6 +5,7 @@ from proxycraft.networking.connection_pooling.connectors.connector_sage_singleto
     safe_singleton,
 )
 from proxycraft.networking.connection_pooling.connectors.context_connector import (
+    close_all_context_connectors,
     get_context_connector,
 )
 from proxycraft.networking.connection_pooling.connectors.event_loop_connector_manager import (
@@ -121,9 +122,22 @@ class HTTPClient:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         if self._session and not self._session.closed:
             await self._session.close()
+        self._session = None
+
+        if self._owns_connector and self.tcp_connector and not self.tcp_connector.closed:
+            await self.tcp_connector.close()
+            self.tcp_connector = None
 
     @property
     def session(self) -> aiohttp.ClientSession:
         if self._session is None or self._session.closed:
             raise RuntimeError("Session not available. Use 'async with HTTPClient()'")
         return self._session
+
+
+async def cleanup_all_connectors() -> None:
+    """Close all shared connectors (context, event loop, thread-local, singleton)."""
+    await close_all_context_connectors()
+    await event_loop_manager.cleanup_all()
+    await thread_local_connector.cleanup_current_thread()
+    await safe_singleton.cleanup()

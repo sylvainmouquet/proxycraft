@@ -85,6 +85,7 @@ class Https:
         data: str | None = None,
         json_data: str | None = None,
         timeout: int | float | None = None,
+        owns_connector: bool = False,
     ):
         try:
             headers = headers.copy() if headers else {}
@@ -131,6 +132,8 @@ class Https:
                     logger.exception(f"HTTP exception: {e}")
                     raise e
         finally:
+            if owns_connector and connector is not None and not connector.closed:
+                await connector.close()
             # for keepalive
             await asyncio.sleep(0.01)
 
@@ -158,11 +161,13 @@ class Https:
 
         connector = getattr(request.app.state, "connector", None)
         trace_config = getattr(request.app.state, "trace_config", None)
+        owns_connector = False
         if connector is None:
             logger.warning("Connector unavailable")
             connector = aiohttp.TCPConnector(
                 limit=100, force_close=False, enable_cleanup_closed=False
             )
+            owns_connector = True
 
         if trace_config is None:
             logger.warning("TraceConfig unavailable")
@@ -221,6 +226,7 @@ class Https:
             timeout=timeout,
             connector=connector,
             trace_config=trace_config,
+            owns_connector=owns_connector,
         )
 
         if not isinstance(response, StreamingResponse):

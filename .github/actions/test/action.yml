@@ -1,4 +1,5 @@
 name: Run Tests
+description: Install dependencies and run the test suite with just
 
 inputs:
   python-version:
