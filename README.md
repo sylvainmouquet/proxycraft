@@ -124,6 +124,34 @@ docker build -t proxycraft -f dockerfiles/proxycraft.Dockerfile .
 docker run  -p 8080:8080 proxycraft
 ```
 
+## Development
+
+Install [just](https://github.com/casey/just) and [uv](https://docs.astral.sh/uv/), then:
+
+```bash
+just install
+just test
+just lint
+```
+
+Build a release (requires `VERSION`):
+
+```bash
+VERSION=1.0.0 just build
+```
+
+Run a subset of tests:
+
+```bash
+just test tests/path/to/test_file.py
+```
+
+List all available commands:
+
+```bash
+just
+```
+
 ## 📄 License
 
 [MIT](LICENSE)

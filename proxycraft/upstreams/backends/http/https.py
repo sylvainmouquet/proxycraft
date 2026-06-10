@@ -118,7 +118,6 @@ class Https:
                         connector_owner=False,
                     ) as client:
                         https: HTTPS_aiohttp = HTTPS_aiohttp(client_session=client)
-                        # https: HTTPS_curl_cffi = HTTPS_curl_cffi(client_session=client)
 
                         response = await https.request(
                             method=method,

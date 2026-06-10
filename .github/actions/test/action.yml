@@ -1,7 +1,13 @@
 name: Run Tests
 
+inputs:
+  python-version:
+    description: Python version to use for tests
+    required: false
+    default: '3.13'
+
 runs:
-  using: 'composite'
+  using: composite
   steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -10,23 +16,27 @@ runs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ inputs.python-version }}
     - name: Install uv
       uses: astral-sh/setup-uv@v4
+    - name: Install just
+      uses: extractions/setup-just@v2
     - name: Use uv with Python version
-      run: uv venv --python ${{ matrix.python-version }}
+      run: uv venv --python ${{ inputs.python-version }}
       shell: bash
     - name: Install dependencies
-      run: make install
+      run: just install
       shell: bash
+      env:
+        PYTHON_VERSION: ${{ inputs.python-version }}
     - name: Build
       env:
         VERSION: 0.0.1
-      run: make build
+        PYTHON_VERSION: ${{ inputs.python-version }}
+      run: just build
       shell: bash
     - name: Run tests
-      run: |
-        make test
+      run: just test
       shell: bash
       env:
-        PYTHON_VERSION: ${{ matrix.python-version }}
+        PYTHON_VERSION: ${{ inputs.python-version }}
