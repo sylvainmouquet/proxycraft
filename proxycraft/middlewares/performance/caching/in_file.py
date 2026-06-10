@@ -462,8 +462,11 @@ class InFileCacheMiddleware:
                                                     files_removed += 1
                                             except ValueError:
                                                 pass
-                                except Exception as e:
-                                    logger.exception(e)
+                                except Exception:
+                                    logger.exception(
+                                        "Failed to read cache file during cleanup",
+                                        path=file_path,
+                                    )
                                     # If reading fails, just delete the file
                                     await loop.run_in_executor(
                                         None, os.remove, file_path
@@ -477,8 +480,8 @@ class InFileCacheMiddleware:
 
             logger.info(f"Removed {files_removed} expired cache entries")
 
-        except Exception as e:
-            logger.error(f"Error during cache cleanup: {e}")
+        except Exception:
+            logger.exception("Cache cleanup failed")
 
     async def get_stats(self) -> dict[str, Any]:
         """Get statistics about the cache."""
@@ -495,11 +498,13 @@ class InFileCacheMiddleware:
                     if await loop.run_in_executor(None, os.path.isfile, file_path):
                         stat = await loop.run_in_executor(None, os.stat, file_path)
                         total_size += stat.st_size
-                except Exception as e:
-                    logger.exception(e)
-                    pass
-        except Exception as e:
-            logger.exception(e)
+                except Exception:
+                    logger.exception(
+                        "Failed to read cache file stats",
+                        path=file_path,
+                    )
+        except Exception:
+            logger.exception("Failed to collect cache statistics")
 
             all_files = []
             total_size = 0

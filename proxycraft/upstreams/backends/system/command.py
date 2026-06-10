@@ -1,6 +1,6 @@
 import asyncio
-import logging
 import platform
+import time
 import pty
 import struct
 import os
@@ -13,6 +13,9 @@ from starlette.requests import Request
 from starlette.responses import StreamingResponse, JSONResponse, Response
 
 from proxycraft.config.models import Endpoint, Backends
+from proxycraft.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class Command:
@@ -26,6 +29,7 @@ class Command:
         self.timeout = 10
 
     async def handle_request(self, request: Request, headers: dict) -> Response:
+        start = time.perf_counter()
         try:
             # -------------------------
             # Resolve command
@@ -48,7 +52,8 @@ class Command:
                 if isinstance(json_body, dict) and "args" in json_body:
                     command.extend(map(str, json_body["args"]))
 
-            logging.info("Executing command: %s", " ".join(command))
+            command_str = " ".join(command)
+            logger.info("Starting command execution", command=command_str)
 
             env = os.environ.copy()
             env.update(
@@ -118,20 +123,30 @@ class Command:
                 rc = await process.wait()
                 yield f"\n[exit {rc}]\n".encode()
 
+            duration_ms = round((time.perf_counter() - start) * 1000)
             return StreamingResponse(
                 stream_output(),
                 media_type="application/octet-stream",
             )
 
         except asyncio.TimeoutError:
-            logging.error("Command execution timed out after %ss", self.timeout)
+            duration_ms = round((time.perf_counter() - start) * 1000)
+            logger.error(
+                "Command execution timed out",
+                timeout_s=self.timeout,
+                duration_ms=duration_ms,
+            )
             return JSONResponse(
                 content={"error": f"Command execution timed out after {self.timeout}s"},
                 status_code=HTTPStatus.REQUEST_TIMEOUT.value,
             )
 
         except Exception as e:
-            logging.exception("Unexpected error executing command")
+            duration_ms = round((time.perf_counter() - start) * 1000)
+            logger.exception(
+                "Command execution failed",
+                duration_ms=duration_ms,
+            )
             return JSONResponse(
                 content={"error": str(e)},
                 status_code=HTTPStatus.INTERNAL_SERVER_ERROR.value,

@@ -45,7 +45,7 @@ class CircuitBreakingMiddleware:
             await self.app(scope, receive, send)
             return
 
-        logger.info("Call CircuitBreakingMiddleware")
+        logger.debug("Middleware invoked", middleware="CircuitBreakingMiddleware")
 
         config = self.config
         path = scope["path"].lstrip("/")

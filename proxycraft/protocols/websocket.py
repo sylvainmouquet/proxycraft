@@ -1,5 +1,5 @@
 import aiohttp
-import logging
+from proxycraft.logger import get_logger
 import asyncio
 
 
@@ -16,7 +16,7 @@ class WebSocket:
         """
         self.ssl = ssl
         self.timeout = timeout
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_logger(__name__)
         self._ws = None
 
     async def connect(self, url: str, headers: dict = None) -> None:

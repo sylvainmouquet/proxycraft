@@ -1,12 +1,9 @@
 import uuid
-
 import time
 from typing import Dict, Optional, Callable
 from dataclasses import dataclass
 
-
 from proxycraft.logger import get_logger
-
 
 logger = get_logger(__name__)
 
@@ -43,15 +40,16 @@ class DefaultTraceHandlers:
 
     async def on_request_start(self, session, trace_config_ctx, params):
         """Called when request starts"""
-        # Use id() to get a hashable key from the context object
         request_id = str(uuid.uuid4())[:8]
         trace_config_ctx.request_id = request_id
         self._request_times[trace_config_ctx.request_id] = time.perf_counter()
 
         if self.config.enable_logging:
-            logger.log(
-                self.config.log_level,
-                f"🚀 Request started: {request_id} - {params.method} {params.url}",
+            logger.info(
+                "HTTP request started",
+                request_id=request_id,
+                method=params.method,
+                url=str(params.url),
             )
 
         if self.config.on_request_start:
@@ -61,21 +59,20 @@ class DefaultTraceHandlers:
         """Called when request ends"""
         ctx_id = trace_config_ctx.request_id
         start_time = self._request_times.pop(ctx_id, None)
-        duration = time.perf_counter() - start_time if start_time else 0
+        duration_ms = round((time.perf_counter() - start_time) * 1000) if start_time else 0
         self.request_count += 1
 
         if self.config.enable_logging:
-            logger.log(
-                self.config.log_level,
-                f"✅ Request completed: {params.method} {params.url} "
-                f"-> {params.response.status} ({duration:.3f}s)",
-            )
-
-            logger.log(
-                self.config.log_level,
-                f"Stats - Requests: {self.request_count}, "
-                f"Connections created: {self.connection_create_count}, "
-                f"Connections reused: {self.connection_reuse_count}",
+            logger.info(
+                "HTTP request completed",
+                request_id=ctx_id,
+                method=params.method,
+                url=str(params.url),
+                status_code=params.response.status,
+                duration_ms=duration_ms,
+                request_count=self.request_count,
+                connections_created=self.connection_create_count,
+                connections_reused=self.connection_reuse_count,
             )
 
         if self.config.on_request_end:
@@ -85,12 +82,16 @@ class DefaultTraceHandlers:
         """Called when request raises an exception"""
         ctx_id = trace_config_ctx.request_id
         start_time = self._request_times.pop(ctx_id, None)
-        duration = time.perf_counter() - start_time if start_time else 0
+        duration_ms = round((time.perf_counter() - start_time) * 1000) if start_time else 0
 
         if self.config.enable_logging:
             logger.error(
-                f"⛔ Request failed: {params.method} {params.url} "
-                f"-> {params.exception} ({duration:.3f}s)"
+                "HTTP request failed",
+                request_id=ctx_id,
+                method=params.method,
+                url=str(params.url),
+                duration_ms=duration_ms,
+                error=str(params.exception),
             )
 
         if self.config.on_request_exception:
@@ -103,9 +104,9 @@ class DefaultTraceHandlers:
         self.connection_create_count += 1
 
         if self.config.enable_logging:
-            logger.log(
-                self.config.log_level,
-                f"🔗 Creating new connection for request: {getattr(trace_config_ctx, 'request_id', 'unknown')}",
+            logger.debug(
+                "Creating new connection",
+                request_id=getattr(trace_config_ctx, "request_id", "unknown"),
             )
 
         if self.config.on_connection_create_start:
@@ -117,12 +118,13 @@ class DefaultTraceHandlers:
         """Called when connection creation ends"""
         ctx_id = trace_config_ctx.request_id
         start_time = self._connection_times.pop(ctx_id, None)
-        duration = time.perf_counter() - start_time if start_time else 0
+        duration_ms = round((time.perf_counter() - start_time) * 1000) if start_time else 0
 
         if self.config.enable_logging:
-            logger.log(
-                self.config.log_level,
-                f"🆕 Connection created for request: {getattr(trace_config_ctx, 'request_id', 'unknown')} ({duration:.3f}s)",
+            logger.debug(
+                "Connection created",
+                request_id=getattr(trace_config_ctx, "request_id", "unknown"),
+                duration_ms=duration_ms,
             )
 
         if self.config.on_connection_create_end:
@@ -135,9 +137,9 @@ class DefaultTraceHandlers:
         self.connection_reuse_count += 1
 
         if self.config.enable_logging:
-            logger.log(
-                self.config.log_level,
-                f"♻️ Reusing connection for request: {getattr(trace_config_ctx, 'request_id', 'unknown')}",
+            logger.debug(
+                "Connection reused",
+                request_id=getattr(trace_config_ctx, "request_id", "unknown"),
             )
 
         if self.config.on_connection_reuseconn:
@@ -146,7 +148,7 @@ class DefaultTraceHandlers:
     async def on_dns_resolvehost_start(self, session, trace_config_ctx, params):
         """Called when DNS resolution starts"""
         if self.config.enable_logging:
-            logger.log(self.config.log_level, f"Resolving DNS for {params.host}")
+            logger.debug("DNS resolution started", host=params.host)
 
         if self.config.on_dns_resolvehost_start:
             await self.config.on_dns_resolvehost_start(
@@ -156,7 +158,7 @@ class DefaultTraceHandlers:
     async def on_dns_resolvehost_end(self, session, trace_config_ctx, params):
         """Called when DNS resolution ends"""
         if self.config.enable_logging:
-            logger.log(self.config.log_level, f"DNS resolved for {params.host}")
+            logger.debug("DNS resolution completed", host=params.host)
 
         if self.config.on_dns_resolvehost_end:
             await self.config.on_dns_resolvehost_end(session, trace_config_ctx, params)

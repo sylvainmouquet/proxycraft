@@ -11,7 +11,7 @@ from starlette.responses import JSONResponse, Response
 from starlette.routing import Route, WebSocketRoute
 from starlette.websockets import WebSocket
 from proxycraft.config.models import Endpoint, Config
-from proxycraft.logger import get_logger
+from proxycraft.logger import get_logger, setup_structlog
 from proxycraft.middlewares.content_length_middleware import ContentLengthMiddleware
 import asyncio
 import gunicorn.app.base
@@ -127,7 +127,7 @@ async def handle_request(
                 if isinstance(endpoint.backends, list)
                 else endpoint.backends
             )
-            logger.debug(f"{upstream=} - {backend=}")
+            logger.debug("Routing request", upstream=str(upstream), backend=str(backend))
 
             return await ProxyHandlerFactory.create_and_handle(
                 backend, endpoint, request, headers, connection_pooling
@@ -178,8 +178,7 @@ async def handle_request(
         )
 
     except Exception as e:
-        logger.error(f"Error: {e}")
-        logger.exception(e)
+        logger.exception("Request handling failed")
         if isinstance(e, asyncio.TimeoutError):
             return Response(
                 content="Request timed out",
@@ -215,8 +214,8 @@ async def websocket_proxy(websocket: WebSocket, channel: str):
                 # Echo back for demo
                 await websocket.send_text(f"Channel {channel}: {data}")
         """
-    except Exception as e:
-        print(f"WebSocket error: {e}")
+    except Exception:
+        logger.exception("WebSocket proxy error", channel=channel)
     finally:
         await websocket.close()
 
@@ -317,7 +316,7 @@ class ProxyCraft:
         self.config = get_file_config(config_file) if config_file else config
         if not self.config:
             if config_file:
-                logger.info(f"File {config_file} not found")
+                logger.info("Configuration file not found, using defaults", config_file=config_file)
             self.config = Config(
                 **{
                     "version": "1.0",
@@ -460,12 +459,9 @@ class ProxyCraft:
 
         @contextlib.asynccontextmanager
         async def lifespan(app):
-            # Startup
-            print("Application starting...")
-
+            logger.info("Application starting")
             yield
-            # Shutdown
-            print("Application shutting down...")
+            logger.info("Application shutting down")
             # Cleanup (optional, but good practice)
             await event_loop_manager.cleanup_all()
             await safe_singleton.cleanup()
@@ -486,13 +482,13 @@ class ProxyCraft:
         if check_path(self.config, "server.port") and self.config.server.port:
             port = self.config.server.port
 
-        logger.debug(f"Host: {host}, Port: {port}")
+        logger.debug("Server configuration", host=host, port=port)
 
         if server == "local":
             return
 
         if server == "granian":
-            logger.info("Starting Granian server")
+            logger.info("Starting Granian server", host=host, port=port)
 
             from granian import Granian
             from granian.constants import Interfaces, Loops
@@ -519,7 +515,7 @@ class ProxyCraft:
             granian_app.serve()
 
         elif server == "robyn":
-            logger.info("Starting Robyn server")
+            logger.info("Starting Robyn server", host=host, port=port)
             from robyn import Robyn
 
             # Create Robyn app instance
@@ -576,7 +572,7 @@ class ProxyCraft:
             }
             StandaloneApplication(self.app, options).run()
         elif server == "uvicorn":
-            logger.info("Start uvicorn server")
+            logger.info("Starting uvicorn server", host=host, port=port)
 
             import uvicorn
 
@@ -600,7 +596,7 @@ class ProxyCraft:
                 ),
             )
         else:
-            logger.info("Start hypercorn server")
+            logger.info("Starting hypercorn server", host=host, port=port)
             import asyncio
             from hypercorn.config import Config as HypercornConfig
             from hypercorn.asyncio import serve
@@ -622,6 +618,7 @@ class ProxyCraft:
 
 
 if __name__ == "__main__":
+    setup_structlog(json_logs=False)
     source_dir = Path(__file__).parent
     config_path = source_dir / "default.json"
 

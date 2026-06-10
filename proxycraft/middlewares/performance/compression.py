@@ -26,7 +26,7 @@ class CompressionMiddleware:
             await self.app(scope, receive, send)
             return
 
-        logger.info("Call CompressionMiddleware")
+        logger.debug("Middleware invoked", middleware="CompressionMiddleware")
 
         request_headers = dict(scope.get("headers", []))
         accept_encoding = request_headers.get(b"accept-encoding", b"").decode()
@@ -52,7 +52,7 @@ class CompressionMiddleware:
             and config.middlewares.performance.compression
             and config.middlewares.performance.compression.enabled is True
         ):
-            logger.info("Call GZipMiddleware")
+            logger.debug("Middleware invoked", middleware="GZipMiddleware")
 
             minimum_size = config.middlewares.performance.compression.minimum_size
             compress_level = config.middlewares.performance.compression.compress_level

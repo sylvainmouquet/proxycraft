@@ -44,7 +44,7 @@ class Https:
         target_url = target_url.strip("/")
         target_url = f"{target_url}?{query}" if query is not None else target_url
 
-        logger.info(f"target URL: {target_url}")
+        logger.debug("Resolved target URL", target_url=target_url)
         return target_url
 
     async def _fetch_and_stream_data(
@@ -129,8 +129,12 @@ class Https:
                         )
                         return response
                 except HTTPException as e:
-                    logger.exception(f"HTTP exception: {e}")
-                    raise e
+                    logger.warning(
+                        "HTTP request rejected",
+                        status_code=e.status_code,
+                        detail=str(e.detail),
+                    )
+                    raise
         finally:
             if owns_connector and connector is not None and not connector.closed:
                 await connector.close()

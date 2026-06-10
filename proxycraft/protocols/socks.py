@@ -1,7 +1,7 @@
 import asyncio
 import socket
 import struct
-import logging
+from proxycraft.logger import get_logger
 import ipaddress
 
 
@@ -48,7 +48,7 @@ class SocksProxy:
         self.username = username
         self.password = password
         self.timeout = timeout
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_logger(__name__)
 
     async def create_connection(self, target_host: str, target_port: int) -> tuple:
         """Create a TCP connection through the SOCKS proxy.
@@ -473,7 +473,7 @@ class SocksTCP:
             timeout=timeout,
         )
         self.timeout = timeout
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_logger(__name__)
         self._reader = None
         self._writer = None
 
@@ -577,7 +577,7 @@ class SocksUDP:
             timeout=timeout,
         )
         self.timeout = timeout
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_logger(__name__)
         self._transport = None
         self._protocol = None
         self._control = None  # TCP control connection

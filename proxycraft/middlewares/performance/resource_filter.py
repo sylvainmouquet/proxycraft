@@ -27,7 +27,7 @@ class ResourceFilterMiddleware:
             await self.app(scope, receive, send)
             return
 
-        logger.info("Call ResourceFilterMiddleware")
+        logger.debug("Middleware invoked", middleware="ResourceFilterMiddleware")
 
         config = self.config
 

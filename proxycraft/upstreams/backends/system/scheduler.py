@@ -1,23 +1,22 @@
 import asyncio
-import logging
+import time
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any
+import json
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 from starlette.requests import Request
 from starlette.responses import Response
 
 from proxycraft.config.models import Endpoint, Backends
+from proxycraft.logger import get_logger
 from proxycraft.networking.connection_pooling.connection_pooling import (
     ConnectionPooling,
 )
 
-import json
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Any
-
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.cron import CronTrigger
-
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class Scheduler:
@@ -66,8 +65,12 @@ class JobHistoryStorage:
         try:
             with open(job_file, "w") as f:
                 json.dump(job_data, f, indent=2)
-        except Exception as e:
-            logger.error(f"Failed to save job history for {job_id}: {e}")
+        except Exception:
+            logger.exception(
+                "Failed to save job history",
+                job_id=job_id,
+                path=str(job_file),
+            )
 
     async def cleanup_old_records(self) -> None:
         """Remove job history files older than retention period"""
@@ -77,9 +80,15 @@ class JobHistoryStorage:
             try:
                 if file_path.stat().st_mtime < cutoff_time.timestamp():
                     file_path.unlink()
-                    logger.info(f"Removed old job history file: {file_path}")
-            except Exception as e:
-                logger.error(f"Failed to cleanup job history file {file_path}: {e}")
+                    logger.info(
+                        "Removed old job history file",
+                        path=str(file_path),
+                    )
+            except Exception:
+                logger.exception(
+                    "Failed to cleanup job history file",
+                    path=str(file_path),
+                )
 
     async def get_job_history(
         self, job_id: str | None = None, limit: int = 100
@@ -98,8 +107,11 @@ class JobHistoryStorage:
                 with open(file_path, "r") as f:
                     job_data = json.load(f)
                     history.append(job_data)
-            except Exception as e:
-                logger.error(f"Failed to read job history file {file_path}: {e}")
+            except Exception:
+                logger.exception(
+                    "Failed to read job history file",
+                    path=str(file_path),
+                )
 
         return history
 
@@ -117,8 +129,13 @@ class SchedulerService:
         self, job_id: str, command: str, description: str
     ) -> None:
         """Execute a scheduled command and log the result"""
+        start = time.perf_counter()
         start_time = datetime.now()
-        logger.info(f"Starting job {job_id}: {description}")
+        logger.info(
+            "Background job started",
+            job_id=job_id,
+            description=description,
+        )
 
         try:
             process = await asyncio.create_subprocess_shell(
@@ -126,6 +143,7 @@ class SchedulerService:
             )
 
             stdout, stderr = await process.communicate()
+            duration_ms = round((time.perf_counter() - start) * 1000)
 
             result = {
                 "job_id": job_id,
@@ -142,13 +160,22 @@ class SchedulerService:
             await self.job_history.save_job_result(job_id, result)
 
             if process.returncode == 0:
-                logger.info(f"Job {job_id} completed successfully")
+                logger.info(
+                    "Background job completed",
+                    job_id=job_id,
+                    return_code=process.returncode,
+                    duration_ms=duration_ms,
+                )
             else:
                 logger.error(
-                    f"Job {job_id} failed with return code {process.returncode}"
+                    "Background job failed",
+                    job_id=job_id,
+                    return_code=process.returncode,
+                    duration_ms=duration_ms,
                 )
 
         except Exception as e:
+            duration_ms = round((time.perf_counter() - start) * 1000)
             result = {
                 "job_id": job_id,
                 "command": command,
@@ -160,7 +187,11 @@ class SchedulerService:
             }
 
             await self.job_history.save_job_result(job_id, result)
-            logger.error(f"Job {job_id} failed with exception: {e}")
+            logger.exception(
+                "Background job failed with exception",
+                job_id=job_id,
+                duration_ms=duration_ms,
+            )
 
     async def start(self) -> None:
         """Start the scheduler and register cron jobs"""
@@ -190,7 +221,12 @@ class SchedulerService:
                     coalesce=True,
                 )
 
-                logger.info(f"Registered cron job {job_id}: {description} ({schedule})")
+                logger.info(
+                    "Registered cron job",
+                    job_id=job_id,
+                    description=description,
+                    schedule=schedule,
+                )
 
         # Add cleanup job for job history
         cleanup_trigger = CronTrigger(hour=3, minute=0)  # Daily at 3 AM

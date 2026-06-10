@@ -2,7 +2,7 @@ import contextlib
 from typing import Any
 
 import asyncio
-import logging
+from proxycraft.logger import get_logger
 
 
 class TCPConnection:
@@ -12,7 +12,7 @@ class TCPConnection:
         """Initialize with StreamReader and StreamWriter."""
         self.reader = reader
         self.writer = writer
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_logger(__name__)
         self.ssl_context = ssl_context
 
     async def send(self, data: bytes) -> bytes:
@@ -160,7 +160,7 @@ class TCP:
         """
         self.timeout = timeout
         self.proxy = proxy
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_logger(__name__)
 
     @contextlib.asynccontextmanager
     async def connect(self, host: str, port: int):

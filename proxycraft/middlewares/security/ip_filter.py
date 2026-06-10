@@ -18,7 +18,7 @@ class IpFilterMiddleware:
         self.config = config
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        logger.info("Call IpFilterMiddleware")
+        logger.debug("Middleware invoked", middleware="IpFilterMiddleware")
 
         if scope["type"] != "http":  # pragma: no cover
             await self.app(scope, receive, send)

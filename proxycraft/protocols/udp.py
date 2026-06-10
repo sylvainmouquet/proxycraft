@@ -1,7 +1,7 @@
 from typing import Any
 
 import asyncio
-import logging
+from proxycraft.logger import get_logger
 
 
 class UDP:
@@ -16,7 +16,7 @@ class UDP:
         """
         self.timeout = timeout
         self.proxy = proxy
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_logger(__name__)
         self._transport = None
         self._protocol = None
         self._remote_addr = None

@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 import aiohttp
-import logging
+from proxycraft.logger import get_logger
 import asyncio
 from typing import Any
 
@@ -30,7 +30,7 @@ class HTTPS_aiohttp:
         """
         self.ssl = ssl
         self.timeout = timeout
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_logger(__name__)
         self.proxy = proxy
         self.client_session = client_session or ClientSession()
 

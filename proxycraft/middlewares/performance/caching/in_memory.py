@@ -70,8 +70,8 @@ class InMemoryCacheMiddleware:
                 )  # Run cleanup at half the TTL interval
             except asyncio.CancelledError:
                 break
-            except Exception as e:
-                logger.error(f"Error in cache cleanup: {e}")
+            except Exception:
+                logger.exception("Cache cleanup failed")
                 await asyncio.sleep(30)  # Wait before retrying
 
     """
@@ -99,7 +99,7 @@ class InMemoryCacheMiddleware:
         return True
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        logger.info("Call InMemoryCacheMiddleware")
+        logger.debug("Middleware invoked", middleware="InMemoryCacheMiddleware")
 
         if scope["type"] != "http":  # pragma: no cover
             await self.app(scope, receive, send)

@@ -1,8 +1,8 @@
-import structlog
-from structlog.typing import FilteringBoundLogger
-
 import logging
 import sys
+
+import structlog
+from structlog.typing import FilteringBoundLogger
 
 
 def setup_structlog(
@@ -13,28 +13,25 @@ def setup_structlog(
     """
     Configure structlog for structured logging.
 
+    Call once at application startup. Module loggers are created with
+    ``get_logger(__name__)`` and accept structured fields as keyword arguments.
+
     Args:
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         json_logs: Whether to output logs in JSON format
         include_timestamp: Whether to include timestamps in logs
     """
 
-    # Configure standard library logging
     logging.basicConfig(
         format="%(message)s",
         stream=sys.stdout,
         level=getattr(logging, log_level.upper()),
     )
 
-    # Common processors for all environments
     processors = [
-        # Add log level to log entries
         structlog.stdlib.add_log_level,
-        # Add logger name to log entries
         structlog.stdlib.add_logger_name,
-        # Perform %-style formatting
         structlog.stdlib.PositionalArgumentsFormatter(),
-        # Add call site information
         structlog.processors.CallsiteParameterAdder(
             parameters=[
                 structlog.processors.CallsiteParameter.FILENAME,
@@ -47,15 +44,12 @@ def setup_structlog(
         processors.append(structlog.processors.TimeStamper(fmt="ISO", utc=True))
 
     if json_logs:
-        # JSON output for production
         processors.extend(
             [structlog.processors.dict_tracebacks, structlog.processors.JSONRenderer()]
         )
     else:
-        # Pretty console output for development
         processors.extend([structlog.dev.ConsoleRenderer(colors=True)])
 
-    # Configure structlog
     structlog.configure(
         processors=processors,
         wrapper_class=structlog.stdlib.BoundLogger,
@@ -66,5 +60,23 @@ def setup_structlog(
 
 
 def get_logger(name: str | None = None) -> FilteringBoundLogger:
-    """Get a structured logger instance."""
+    """
+    Return a structured logger for the calling module.
+
+    Usage::
+
+        from proxycraft.logger import get_logger
+
+        logger = get_logger(__name__)
+
+    Pass context as keyword arguments (equivalent to ``extra={}``)::
+
+        logger.info(
+            "API request completed",
+            method="GET",
+            endpoint="/documents",
+            status_code=200,
+            duration_ms=152,
+        )
+    """
     return structlog.get_logger(name)

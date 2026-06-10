@@ -1,11 +1,11 @@
 import json
-import logging
-
 from threading import Lock
 
 from proxycraft.config.models import Config
+from proxycraft.logger import get_logger
 
 config_lock = Lock()
+logger = get_logger(__name__)
 
 
 def get_file_config(filepath: str) -> Config | None:
@@ -15,8 +15,12 @@ def get_file_config(filepath: str) -> Config | None:
                 json_loaded = json.load(f)
                 config = Config(**json_loaded)
                 config.endpoints.sort(key=lambda e: e.weight, reverse=True)
-                logging.info(f"Nb endpoints: {len(config.endpoints)}")
+                logger.info(
+                    "Configuration loaded",
+                    filepath=filepath,
+                    endpoint_count=len(config.endpoints),
+                )
                 return config
         except FileNotFoundError:
-            logging.error(f"File {filepath} not found")
+            logger.error("Configuration file not found", filepath=filepath)
             return None
