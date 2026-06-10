@@ -1,13 +1,13 @@
 import logging
 from http import HTTPStatus
 
+import httpx
 import pytest
 
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
-from starlette.testclient import TestClient
 
 from proxycraft import ProxyCraft
 from proxycraft.features.configuration.models import Config
@@ -70,21 +70,32 @@ async def test_bot_filter_middleware(config):
     # Add the middleware to your app
     app.add_middleware(BotFilterMiddleware, config=proxycraft.config)  # type: ignore
 
-    client = TestClient(app)
+    transport = httpx.ASGITransport(app=app)
 
-    response = client.get("/test-bot")
-    assert response.status_code == HTTPStatus.OK
+    async with httpx.AsyncClient(
+        transport=transport, base_url="http://testserver"
+    ) as client:
+        response = await client.get("/test-bot")
+        assert response.status_code == HTTPStatus.OK
 
-    response = client.get("/example")
-    assert response.status_code == HTTPStatus.NOT_FOUND
+        response = await client.get("/example")
+        assert response.status_code == HTTPStatus.NOT_FOUND
 
-    client = TestClient(app, headers={"User-Agent": "crawl-1-249-66-1.googlebot.com"})
-    response = client.get("/test-bot")
-    assert response.status_code == HTTPStatus.OK
+        response = await client.get(
+            "/test-bot", headers={"User-Agent": "crawl-1-249-66-1.googlebot.com"}
+        )
+        assert response.status_code == HTTPStatus.OK
 
-    client = TestClient(app, headers={"User-Agent": "crawl-66-249-66-1.googlebot.com"})
-    response = client.get("/test-bot")
-    assert response.status_code == HTTPStatus.FORBIDDEN if enabled else HTTPStatus.OK
+        response = await client.get(
+            "/test-bot", headers={"User-Agent": "crawl-66-249-66-1.googlebot.com"}
+        )
+        assert (
+            response.status_code == HTTPStatus.FORBIDDEN if enabled else HTTPStatus.OK
+        )
 
-    response = client.get("/example")
-    assert response.status_code == HTTPStatus.FORBIDDEN if enabled else HTTPStatus.OK
+        response = await client.get(
+            "/example", headers={"User-Agent": "crawl-66-249-66-1.googlebot.com"}
+        )
+        assert (
+            response.status_code == HTTPStatus.FORBIDDEN if enabled else HTTPStatus.OK
+        )

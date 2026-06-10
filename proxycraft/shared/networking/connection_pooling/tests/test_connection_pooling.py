@@ -43,9 +43,7 @@ async def test_connection_pooling():
 
             return connection
 
-    tcp_connector = TCPConnector(
-        keepalive_timeout=1, limit=10, force_close=False, enable_cleanup_closed=True
-    )
+    tcp_connector = TCPConnector(keepalive_timeout=1, limit=10, force_close=False)
 
     print(f"Starting with PID: {os.getpid()}")
 

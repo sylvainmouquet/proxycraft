@@ -1,13 +1,13 @@
 import logging
 from http import HTTPStatus
 
+import httpx
 import pytest
 from starlette.applications import Starlette
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
-from starlette.testclient import TestClient
 
 from proxycraft import ProxyCraft
 from proxycraft.features.configuration.models import Config
@@ -56,19 +56,28 @@ async def test_ip_filter_middleware(config):
     # Add the middleware to your app
     app.add_middleware(IpFilterMiddleware, config=proxycraft.config)  # type: ignore
 
-    # Create a test client
-    client = TestClient(app)
+    transport = httpx.ASGITransport(app=app)
 
-    # Test a request
-    response = client.get("/test-ip")
-    assert response.status_code == HTTPStatus.OK
+    async with httpx.AsyncClient(
+        transport=transport, base_url="http://testserver"
+    ) as client:
+        response = await client.get("/test-ip")
+        assert response.status_code == HTTPStatus.OK
 
-    response = client.get("/example")
-    assert response.status_code == HTTPStatus.NOT_FOUND
+        response = await client.get("/example")
+        assert response.status_code == HTTPStatus.NOT_FOUND
 
-    client = TestClient(app, client=("1.0.0.2", 1000))
-    response = client.get("/test-ip")
-    assert response.status_code == HTTPStatus.FORBIDDEN if enabled else HTTPStatus.OK
+    blocked_transport = httpx.ASGITransport(app=app, client=("1.0.0.2", 1000))
 
-    response = client.get("/example")
-    assert response.status_code == HTTPStatus.FORBIDDEN if enabled else HTTPStatus.OK
+    async with httpx.AsyncClient(
+        transport=blocked_transport, base_url="http://testserver"
+    ) as client:
+        response = await client.get("/test-ip")
+        assert (
+            response.status_code == HTTPStatus.FORBIDDEN if enabled else HTTPStatus.OK
+        )
+
+        response = await client.get("/example")
+        assert (
+            response.status_code == HTTPStatus.FORBIDDEN if enabled else HTTPStatus.OK
+        )

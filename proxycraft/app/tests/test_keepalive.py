@@ -59,7 +59,6 @@ async def test_keepalive():
         limit=10,
         keepalive_timeout=60,  # 60 seconds
         force_close=False,
-        enable_cleanup_closed=True,
         # Enable TCP keepalive packets
     )
 
