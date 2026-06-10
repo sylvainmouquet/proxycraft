@@ -124,6 +124,17 @@ docker build -t proxycraft -f dockerfiles/proxycraft.Dockerfile .
 docker run  -p 8080:8080 proxycraft
 ```
 
+## Project structure
+
+```text
+proxycraft/
+├── app/              # ASGI application composition root
+├── features/         # Capability-owned modules (routing, backends, middleware, …)
+└── shared/           # Cross-cutting infrastructure (logging, connection pooling)
+```
+
+See [docs/architecture.md](docs/architecture.md) and [SPECS.md](SPECS.md) for details.
+
 ## Development
 
 Install [just](https://github.com/casey/just) and [uv](https://docs.astral.sh/uv/), then:

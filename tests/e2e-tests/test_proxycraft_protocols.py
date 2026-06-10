@@ -2,7 +2,7 @@
     documentation: https://tcpbin.com/
 
 
-proxycraft = ProxyCraft("proxycraft/default.json")
+proxycraft = ProxyCraft("proxycraft/features/configuration/default.json")
 
 
 @pytest.mark.asyncio

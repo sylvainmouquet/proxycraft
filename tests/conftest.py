@@ -33,7 +33,7 @@ def disable_logging_exception(mocker):
 @pytest_asyncio.fixture(autouse=True)
 async def cleanup_http_connectors():
     yield
-    from proxycraft.networking.connection_pooling.http_client import (
+    from proxycraft.shared.networking.connection_pooling.http_client import (
         cleanup_all_connectors,
     )
 

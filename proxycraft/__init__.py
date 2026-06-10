@@ -4,7 +4,7 @@ __all__ = (
     "ProxyCraft",
 )
 
-from proxycraft.logger import get_logger
-from proxycraft.proxycraft import ProxyCraft
+from proxycraft.app.proxycraft import ProxyCraft
+from proxycraft.shared.infrastructure.logging import get_logger
 
 logger = get_logger("proxycraft")

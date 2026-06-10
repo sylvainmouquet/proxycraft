@@ -14,7 +14,7 @@ Forward HTTP requests to remote HTTPS backends with prefix-based URL rewriting.
 - [x] HTTPS upstream forwarding via aiohttp
 - [x] Content-Length normalization on proxied responses
 
-**Key files:** `proxycraft/proxycraft.py`, `proxycraft/upstreams/backends/http/https.py`, `proxycraft/protocols/https_aiohttp.py`
+**Key files:** `proxycraft/app/proxycraft.py`, `proxycraft/features/upstream_backends/http/https.py`, `proxycraft/features/protocols/https_aiohttp.py`
 
 ### 2. JSON-driven configuration
 
@@ -26,7 +26,7 @@ Load proxy behavior from a JSON config file with typed models and validation.
 - [x] File loader with defaults
 - [x] Example registry-mirror presets (PyPI, npm, Maven, GitHub, Alpine)
 
-**Key files:** `proxycraft/config/models.py`, `proxycraft/config/loader.py`, `proxycraft/default.json`
+**Key files:** `proxycraft/features/configuration/models.py`, `proxycraft/features/configuration/loader.py`, `proxycraft/features/configuration/default.json`
 
 ### 3. Path-based endpoint routing
 
@@ -38,7 +38,7 @@ Match incoming requests to endpoints using Ant-style path patterns with weight o
 - [x] Weight-sorted endpoint selection
 - [x] Prefix stripping before upstream dispatch
 
-**Key files:** `proxycraft/networking/routing/routing_selector.py`
+**Key files:** `proxycraft/features/routing/routing_selector.py`
 
 ### 4. Upstream backend handlers
 
@@ -52,7 +52,7 @@ Pluggable handlers selected by backend type in endpoint configuration.
 - [x] Redirect backend
 - [x] Command backend (OS-specific command execution)
 
-**Key files:** `proxycraft/proxycraft.py`, `proxycraft/upstreams/backends/http/https.py`, `proxycraft/upstreams/backends/http/echo.py`, `proxycraft/upstreams/backends/http/mock.py`, `proxycraft/upstreams/backends/http/redirect.py`, `proxycraft/upstreams/backends/system/command.py`
+**Key files:** `proxycraft/features/upstream_backends/factory.py`, `proxycraft/features/upstream_backends/http/https.py`, `proxycraft/features/upstream_backends/http/echo.py`, `proxycraft/features/upstream_backends/http/mock.py`, `proxycraft/features/upstream_backends/http/redirect.py`, `proxycraft/features/upstream_backends/system/command.py`
 
 ### 5. Virtual upstream aggregation
 
@@ -63,7 +63,7 @@ Resolve requests by trying multiple source endpoints until one returns HTTP 200.
 - [x] `first-match` strategy
 - [x] Internal httpx ASGI loop for virtual resolution
 
-**Key files:** `proxycraft/proxycraft.py`
+**Key files:** `proxycraft/features/virtual_upstream/resolver.py`, `proxycraft/app/proxycraft.py`
 
 ### 6. Security middleware (IP and bot filtering)
 
@@ -74,7 +74,7 @@ Filter requests by client IP and User-Agent using Ant-style blacklist and whitel
 - [x] IP filter middleware
 - [x] Bot filter middleware
 
-**Key files:** `proxycraft/middlewares/security/ip_filter.py`, `proxycraft/middlewares/security/bot_filter.py`
+**Key files:** `proxycraft/features/security_filtering/ip_filter.py`, `proxycraft/features/security_filtering/bot_filter.py`
 
 ### 7. Performance middleware (resource filter and in-file cache)
 
@@ -85,7 +85,7 @@ Skip noisy static paths and cache GET responses to disk.
 - [x] Resource filter middleware (skip paths)
 - [x] In-file response caching with TTL and size limits
 
-**Key files:** `proxycraft/middlewares/performance/resource_filter.py`, `proxycraft/middlewares/performance/caching/in_file.py`
+**Key files:** `proxycraft/features/performance/resource_filter.py`, `proxycraft/features/performance/caching/in_file.py`
 
 ### 8. Response transformation
 
@@ -96,7 +96,7 @@ Apply text replacements to upstream response bodies per endpoint.
 - [x] Configurable find/replace rules
 - [x] Registry mirror URL rewriting presets
 
-**Key files:** `proxycraft/middlewares/transformer/response_transform.py`
+**Key files:** `proxycraft/features/transformation/response_transform.py`
 
 ### 9. Connection pooling and request tracing
 
@@ -108,7 +108,7 @@ Share aiohttp TCP connectors across requests with lifecycle trace hooks.
 - [x] Trace handlers for connection events
 - [x] Multiple connector strategies (singleton, thread-local, event-loop, context)
 
-**Key files:** `proxycraft/networking/connection_pooling/connection_pooling.py`, `proxycraft/networking/connection_pooling/http_client.py`, `proxycraft/networking/connection_pooling/connectors/`, `proxycraft/networking/connection_pooling/tracing/default_trace_handler.py`
+**Key files:** `proxycraft/shared/networking/connection_pooling/connection_pooling.py`, `proxycraft/shared/networking/connection_pooling/http_client.py`, `proxycraft/shared/networking/connection_pooling/connectors/`, `proxycraft/shared/networking/connection_pooling/tracing/default_trace_handler.py`
 
 ### 10. Multi-server ASGI deployment
 
@@ -121,7 +121,7 @@ Run the proxy under common ASGI servers with optional TLS termination.
 - [x] Hypercorn
 - [x] Server TLS via certificate and key paths
 
-**Key files:** `proxycraft/proxycraft.py`
+**Key files:** `proxycraft/features/virtual_upstream/resolver.py`, `proxycraft/app/proxycraft.py`
 
 ---
 
@@ -136,7 +136,7 @@ Middleware is registered but caching logic is currently disabled.
 - [ ] Enable in-memory cache with TTL and size limits
 - [ ] Wire `MemoryCacheConfig` from endpoint middleware settings
 
-**Potential files:** `proxycraft/middlewares/performance/caching/in_memory.py`
+**Potential files:** `proxycraft/features/performance/caching/in_memory.py`
 
 ### 12. Response compression
 
@@ -147,7 +147,7 @@ Compression middleware exists but config field mapping needs alignment with the 
 - [ ] Fix `min_size` / `types` config mapping
 - [ ] Support gzip and brotli per endpoint
 
-**Potential files:** `proxycraft/middlewares/performance/compression.py`
+**Potential files:** `proxycraft/features/performance/compression.py`
 
 ### 13. Circuit breaker middleware
 
@@ -158,7 +158,7 @@ Full middleware implementation exists but is not registered in the application s
 - [ ] Register circuit breaker in middleware stack
 - [ ] Expose threshold and window settings from config
 
-**Potential files:** `proxycraft/middlewares/performance/circuit_breaker.py`
+**Potential files:** `proxycraft/features/performance/circuit_breaker.py`
 
 ### 14. Load balancing and health checks
 
@@ -170,7 +170,7 @@ Config models support weighted backends and health checks; runtime currently sel
 - [ ] Periodic health check probes
 - [ ] Sticky session support
 
-**Potential files:** `proxycraft/config/models.py`, `proxycraft/upstreams/backends/http/https.py`
+**Potential files:** `proxycraft/features/configuration/models.py`, `proxycraft/features/upstream_backends/http/https.py`
 
 ### 15. Automatic retry on upstream failure
 
@@ -181,7 +181,7 @@ Config models support weighted backends and health checks; runtime currently sel
 - [ ] Retry failed requests with configurable delay and status codes
 - [ ] Respect per-backend retry limits
 
-**Potential files:** `proxycraft/config/models.py`, `proxycraft/upstreams/backends/http/https.py`
+**Potential files:** `proxycraft/features/configuration/models.py`, `proxycraft/features/upstream_backends/http/https.py`
 
 ### 16. Outbound authentication (Basic, JWT)
 
@@ -192,7 +192,7 @@ Header providers exist for Basic and JWT auth but endpoint auth config is not en
 - [ ] Apply endpoint `auth` config to HTTPS upstream calls
 - [ ] Support credential rotation from config
 
-**Potential files:** `proxycraft/security/authentication/basic_auth.py`, `proxycraft/security/authentication/jwt_auth.py`, `proxycraft/upstreams/backends/http/https.py`
+**Potential files:** `proxycraft/features/authentication/basic_auth.py`, `proxycraft/features/authentication/jwt_auth.py`, `proxycraft/features/upstream_backends/http/https.py`
 
 ### 17. WebSocket proxying
 
@@ -203,7 +203,7 @@ WebSocket route accepts connections but backend forwarding is not implemented.
 - [ ] Bidirectional WebSocket proxy to configured upstream
 - [ ] Frame size and ping interval from config
 
-**Potential files:** `proxycraft/proxycraft.py`, `proxycraft/protocols/websocket.py`
+**Potential files:** `proxycraft/app/proxycraft.py`, `proxycraft/features/protocols/websocket.py`
 
 ### 18. File-system static backend
 
@@ -214,7 +214,7 @@ File backend handler and async reader exist but factory wiring and config placem
 - [ ] Fix handler constructor and factory registration
 - [ ] Align config schema (`backends.file` vs `upstream.file`)
 
-**Potential files:** `proxycraft/upstreams/backends/file_system/file.py`, `proxycraft/files/reader/io_async_reader.py`
+**Potential files:** `proxycraft/features/upstream_backends/file_system/file.py`, `proxycraft/shared/persistence/async_reader.py`
 
 ### 19. Cron scheduler service
 
@@ -225,7 +225,7 @@ Scheduler service and job history storage exist; HTTP handler returns placeholde
 - [ ] Start scheduler on application lifespan
 - [ ] Expose job status over HTTP
 
-**Potential files:** `proxycraft/upstreams/backends/system/scheduler.py`
+**Potential files:** `proxycraft/features/upstream_backends/system/scheduler.py`
 
 ### 20. SOCKS, TCP, TLS, and UDP protocol clients
 
@@ -237,7 +237,7 @@ Low-level protocol clients exist as libraries but are not integrated into the ma
 - [ ] Expose TCP/TLS/UDP tunnel endpoints
 - [ ] Add E2E tests for protocol clients
 
-**Potential files:** `proxycraft/protocols/socks.py`, `proxycraft/protocols/tcp.py`, `proxycraft/protocols/tls.py`, `proxycraft/protocols/udp.py`
+**Potential files:** `proxycraft/features/protocols/socks.py`, `proxycraft/features/protocols/tcp.py`, `proxycraft/features/protocols/tls.py`, `proxycraft/features/protocols/udp.py`
 
 ### 21. Metrics and health endpoints
 
@@ -249,7 +249,7 @@ Prometheus integration and `/health` route are stubbed or commented out.
 - [ ] Liveness and readiness health routes
 - [ ] Wire `Monitoring` config from endpoints
 
-**Potential files:** `proxycraft/proxycraft.py`, `proxycraft/config/models.py`
+**Potential files:** `proxycraft/app/proxycraft.py`, `proxycraft/features/configuration/models.py`
 
 ### 22. Alternative ASGI servers (Granian, Robyn)
 
@@ -274,7 +274,7 @@ Ensure valid Content-Length headers on all proxied responses.
 
 - [x] Always-on middleware in application stack
 
-**Key files:** `proxycraft/middlewares/content_length_middleware.py`
+**Key files:** `proxycraft/features/performance/content_length.py`
 
 ### 24. Structured logging
 
@@ -285,7 +285,7 @@ Structured logging via structlog with a project-wide logger factory.
 - [x] Configurable log levels
 - [x] Null handler on package import
 
-**Key files:** `proxycraft/logger.py`
+**Key files:** `proxycraft/shared/infrastructure/logging.py`
 
 ### 25. Registry mirror presets
 
@@ -295,7 +295,7 @@ Ready-made endpoint configurations for common package registries.
 
 - [x] PyPI, npm, Maven, GitHub, and Alpine mirror examples in default config
 
-**Key files:** `proxycraft/default.json`
+**Key files:** `proxycraft/features/configuration/default.json`
 
 ### 26. Docker deployment
 
@@ -317,7 +317,7 @@ Middleware exists as a pass-through and is not registered in the application sta
 - [ ] Header and body transformation on inbound requests
 - [ ] Register middleware per endpoint config
 
-**Potential files:** `proxycraft/middlewares/transformer/request_transform.py`
+**Potential files:** `proxycraft/features/transformation/request_transform.py`
 
 ---
 
@@ -333,7 +333,7 @@ README advertises multiple auth methods; only outbound Basic and JWT helpers exi
 - [ ] NTLM authentication
 - [ ] Kerberos authentication
 
-**Potential files:** `proxycraft/security/authentication/`
+**Potential files:** `proxycraft/features/authentication/`
 
 ### 29. IP rotation for scraping
 
@@ -362,7 +362,7 @@ Config model exists; no runtime handler.
 - [ ] GraphQL schema and resolver loading
 - [ ] Optional playground endpoint
 
-**Potential files:** `proxycraft/config/models.py`
+**Potential files:** `proxycraft/features/configuration/models.py`
 
 ### 32. Serverless function upstream
 
@@ -373,7 +373,7 @@ Config model exists; no runtime handler.
 - [ ] Function runtime dispatch (Python handler loading)
 - [ ] Timeout and memory limits from config
 
-**Potential files:** `proxycraft/config/models.py`
+**Potential files:** `proxycraft/features/configuration/models.py`
 
 ### 33. Service mesh integration
 
@@ -384,7 +384,7 @@ Config model for service mesh metadata; no runtime integration.
 - [ ] Service discovery via mesh sidecar
 - [ ] Protocol and metadata propagation
 
-**Potential files:** `proxycraft/config/models.py`
+**Potential files:** `proxycraft/features/configuration/models.py`
 
 ### 34. CORS middleware
 
@@ -395,7 +395,7 @@ Config model for service mesh metadata; no runtime integration.
 - [ ] Per-endpoint CORS headers
 - [ ] Preflight request handling
 
-**Potential files:** `proxycraft/config/models.py`, `proxycraft/middlewares/`
+**Potential files:** `proxycraft/features/configuration/models.py`, `proxycraft/middlewares/`
 
 ### 35. Failover policies
 
@@ -406,7 +406,7 @@ Config model for service mesh metadata; no runtime integration.
 - [ ] Automatic backend failover on errors
 - [ ] Configurable failover thresholds
 
-**Potential files:** `proxycraft/config/models.py`, `proxycraft/upstreams/backends/http/https.py`
+**Potential files:** `proxycraft/features/configuration/models.py`, `proxycraft/features/upstream_backends/http/https.py`
 
 ### 36. Rate limiting
 
@@ -417,7 +417,7 @@ Config model for service mesh metadata; no runtime integration.
 - [ ] Per-backend request rate limits
 - [ ] Burst handling
 
-**Potential files:** `proxycraft/config/models.py`, `proxycraft/upstreams/backends/http/https.py`
+**Potential files:** `proxycraft/features/configuration/models.py`, `proxycraft/features/upstream_backends/http/https.py`
 
 ### 37. Long-form documentation site
 
@@ -475,14 +475,16 @@ ProxyCraft is a Starlette ASGI application. At startup it loads a JSON config, b
 
 | Component | Role |
 |---|---|
-| `proxycraft/proxycraft.py` | Application bootstrap, routing, middleware registration, server entry |
-| `proxycraft/config/` | Config models, validation, and file loading |
-| `proxycraft/networking/routing/` | Ant-style path matching and endpoint selection |
-| `proxycraft/networking/connection_pooling/` | Shared aiohttp connectors and trace handlers |
-| `proxycraft/upstreams/backends/` | Pluggable upstream handlers (HTTPS, echo, mock, redirect, command, file, scheduler) |
-| `proxycraft/middlewares/` | Security, performance, and transformation middleware |
-| `proxycraft/protocols/` | Low-level HTTP, WebSocket, SOCKS, TCP, TLS, and UDP clients |
-| `proxycraft/security/authentication/` | Outbound auth header providers |
+| `proxycraft/app/` | Application bootstrap, middleware wiring, server entry |
+| `proxycraft/features/configuration/` | Config models, validation, and file loading |
+| `proxycraft/features/routing/` | Ant-style path matching and endpoint selection |
+| `proxycraft/shared/networking/connection_pooling/` | Shared aiohttp connectors and trace handlers |
+| `proxycraft/features/upstream_backends/` | Pluggable upstream handlers (HTTPS, echo, mock, redirect, command, file, scheduler) |
+| `proxycraft/features/security_filtering/`, `performance/`, `transformation/` | Request pipeline middleware |
+| `proxycraft/features/protocols/` | Low-level HTTP, WebSocket, SOCKS, TCP, TLS, and UDP clients |
+| `proxycraft/features/authentication/` | Outbound auth header providers |
+| `proxycraft/features/virtual_upstream/` | First-match virtual upstream resolution |
+| `proxycraft/features/deployment/` | Gunicorn, Uvicorn, Hypercorn, and other ASGI runners |
 
 ### Request flow
 

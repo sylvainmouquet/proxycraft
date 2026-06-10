@@ -1,6 +1,6 @@
 from proxycraft import ProxyCraft
 import pytest
-from proxycraft.config.models import Config
+from proxycraft.features.configuration.models import Config
 import httpx
 import logging
 
